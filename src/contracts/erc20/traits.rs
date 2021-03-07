@@ -123,3 +123,58 @@ pub trait IERC20 {
     ctx.trace("ERC20::allowance [<]");
   }
 }
+
+// =============================================================================
+// =============================================================================
+
+/// ERC20 extension that allows the destruction of tokens
+/// by holders and approved agents.
+pub trait IERC20Burnable: IERC20 {
+  /// Destroys `value` amount of tokens from the account `from`.
+  fn burn(ctx: &ScFuncContext, from: &ScAgentId, value: i64);
+
+  //
+  // Registration
+  //
+
+  fn register(exports: &ScExports) {
+    exports.add_func("burn", Self::func_burn);
+    exports.add_func("burnFrom", Self::func_burn_from);
+  }
+
+  //
+  // IOTA SC Bridge
+  //
+
+  #[doc(hidden)]
+  fn func_burn(ctx: &ScFuncContext) {
+    ctx.trace("ERC20::burn [>]");
+
+    let value: ScImmutableInt64 = ctx.get_required_param("value");
+    let value: i64 = value.value();
+
+    Self::burn(ctx, &ctx.caller(), value);
+
+    ctx.trace("ERC20::burn [<]");
+  }
+
+  #[doc(hidden)]
+  fn func_burn_from(ctx: &ScFuncContext) {
+    ctx.trace("ERC20::burnFrom [>]");
+
+    let from: ScImmutableAgentId = ctx.get_required_param("from");
+    let value: ScImmutableInt64 = ctx.get_required_param("value");
+
+    let from: ScAgentId = from.value();
+    let value: i64 = value.value();
+    let caller: ScAgentId = ctx.caller();
+    let allowance: i64 = Self::allowance(ctx.view(), &from, &caller);
+
+    ctx.require(allowance >= value, "ERC20: burn amount exceeds allowance");
+
+    Self::__approve(ctx, &from, &caller, allowance - value);
+    Self::burn(ctx, &from, value);
+
+    ctx.trace("ERC20::burnFrom [<]");
+  }
+}
