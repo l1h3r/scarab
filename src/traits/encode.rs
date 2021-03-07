@@ -2,7 +2,7 @@ use wasmlib::BytesDecoder;
 use wasmlib::BytesEncoder;
 
 pub trait Encode: Sized {
-  fn decode(decoder: &mut BytesDecoder) -> Self;
+  fn decode(decoder: &mut BytesDecoder<'_>) -> Self;
 
   fn encode(&self, encoder: &mut BytesEncoder);
 

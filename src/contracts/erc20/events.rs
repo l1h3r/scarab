@@ -23,7 +23,7 @@ impl Approval {
 }
 
 impl Encode for Approval {
-  fn decode(decoder: &mut BytesDecoder) -> Self {
+  fn decode(decoder: &mut BytesDecoder<'_>) -> Self {
     Self {
       owner: decoder.agent_id(),
       spender: decoder.agent_id(),
@@ -56,7 +56,7 @@ impl Transfer {
 }
 
 impl Encode for Transfer {
-  fn decode(decoder: &mut BytesDecoder) -> Self {
+  fn decode(decoder: &mut BytesDecoder<'_>) -> Self {
     Self {
       from: decoder.agent_id(),
       to: decoder.agent_id(),

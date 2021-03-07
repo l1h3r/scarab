@@ -9,7 +9,8 @@ use wasmlib::ScViewContext;
 use crate::traits::ContextExt;
 
 /// EIP-20: ERC-20 Token Standard
-/// https://eips.ethereum.org/EIPS/eip-20
+///
+/// [Reference](https://eips.ethereum.org/EIPS/eip-20)
 pub trait IERC20 {
   /// Returns the total token supply.
   fn total_supply(ctx: &ScViewContext) -> i64;
