@@ -4,5 +4,8 @@ version = "0.1.0"
 authors = ["l1h3r <devin.turner09@gmail.com>"]
 edition = "2018"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 wasmlib = { git = "https://github.com/iotaledger/wasp", branch = "develop" }
