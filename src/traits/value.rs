@@ -142,8 +142,8 @@ impl ContainerMut for ScMutableInt64 {
 // =============================================================================
 // =============================================================================
 
-pub trait MapGet<T> {
-  fn mget<U>(&self, key: &U) -> T
+pub trait MapGet<Value> {
+  fn mget<U>(&self, key: &U) -> Value
   where
     U: MapKey + ?Sized;
 }
@@ -293,6 +293,54 @@ impl MapSet for bool {
 // =============================================================================
 // =============================================================================
 
+pub trait MapValue<Map>: Sized
+where
+  Map: MapGet<Self::Container>,
+{
+  type Container: Container<Value = Self>;
+}
+
+macro_rules! impl_MapValue {
+  ($map:ident, $container:ident, $value:ty) => {
+    impl MapValue<$map> for $value {
+      type Container = $container;
+    }
+  };
+  ($(($map:ident, $container:ident, $value:ty),)+) => {
+    $(
+      impl_MapValue!($map, $container, $value);
+    )+
+  };
+}
+
+impl_MapValue! {
+  (ScImmutableMap, ScImmutableAddress, ScAddress),
+  (ScImmutableMap, ScImmutableAgentId, ScAgentId),
+  (ScImmutableMap, ScImmutableBytes, Vec<u8>),
+  (ScImmutableMap, ScImmutableChainId, ScChainId),
+  (ScImmutableMap, ScImmutableColor, ScColor),
+  (ScImmutableMap, ScImmutableContractId, ScContractId),
+  (ScImmutableMap, ScImmutableHash, ScHash),
+  (ScImmutableMap, ScImmutableHname, ScHname),
+  (ScImmutableMap, ScImmutableInt64, i64),
+  (ScImmutableMap, ScImmutableRequestId, ScRequestId),
+  (ScImmutableMap, ScImmutableString, String),
+  (ScMutableMap, ScMutableAddress, ScAddress),
+  (ScMutableMap, ScMutableAgentId, ScAgentId),
+  (ScMutableMap, ScMutableBytes, Vec<u8>),
+  (ScMutableMap, ScMutableChainId, ScChainId),
+  (ScMutableMap, ScMutableColor, ScColor),
+  (ScMutableMap, ScMutableContractId, ScContractId),
+  (ScMutableMap, ScMutableHash, ScHash),
+  (ScMutableMap, ScMutableHname, ScHname),
+  (ScMutableMap, ScMutableInt64, i64),
+  (ScMutableMap, ScMutableRequestId, ScRequestId),
+  (ScMutableMap, ScMutableString, String),
+}
+
+// =============================================================================
+// =============================================================================
+
 pub trait MapExt: Sized {
   fn get<T, U>(&self, key: &T) -> U
   where
@@ -300,6 +348,15 @@ pub trait MapExt: Sized {
     Self: MapGet<U>,
   {
     self.mget(key)
+  }
+
+  fn get_value<T, U>(&self, key: &T) -> U
+  where
+    T: MapKey + ?Sized,
+    U: MapValue<Self>,
+    Self: MapGet<U::Container>,
+  {
+    self.mget(key).get()
   }
 }
 

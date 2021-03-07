@@ -14,5 +14,6 @@ pub use self::value::ContainerMut;
 pub use self::value::MapExt;
 pub use self::value::MapGet;
 pub use self::value::MapSet;
+pub use self::value::MapValue;
 pub use self::value::Value;
 pub use self::zero::Zero;
