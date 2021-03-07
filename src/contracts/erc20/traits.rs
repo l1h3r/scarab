@@ -2,8 +2,6 @@ use wasmlib::ScAgentId;
 use wasmlib::ScBaseContext;
 use wasmlib::ScExports;
 use wasmlib::ScFuncContext;
-use wasmlib::ScImmutableAgentId;
-use wasmlib::ScImmutableInt64;
 use wasmlib::ScViewContext;
 
 use crate::traits::ContextExt;
@@ -68,8 +66,8 @@ pub trait IERC20 {
   fn view_balance_of(ctx: &ScViewContext) {
     ctx.trace("ERC20::balanceOf [>]");
 
-    let owner: ScImmutableAgentId = ctx.get_required_param("owner");
-    let value: i64 = Self::balance_of(ctx, &owner.value());
+    let owner: ScAgentId = ctx.get_required_param("owner");
+    let value: i64 = Self::balance_of(ctx, &owner);
 
     ctx.result("balance", value);
     ctx.trace("ERC20::balanceOf [<]");
@@ -79,10 +77,10 @@ pub trait IERC20 {
   fn func_transfer(ctx: &ScFuncContext) {
     ctx.trace("ERC20::transfer [>]");
 
-    let to: ScImmutableAgentId = ctx.get_required_param("to");
-    let value: ScImmutableInt64 = ctx.get_required_param("value");
+    let to: ScAgentId = ctx.get_required_param("to");
+    let value: i64 = ctx.get_required_param("value");
 
-    Self::transfer(ctx, &to.value(), value.value());
+    Self::transfer(ctx, &to, value);
 
     ctx.trace("ERC20::transfer [<]");
   }
@@ -91,11 +89,11 @@ pub trait IERC20 {
   fn func_transfer_from(ctx: &ScFuncContext) {
     ctx.trace("ERC20::transferFrom [>]");
 
-    let from: ScImmutableAgentId = ctx.get_required_param("from");
-    let to: ScImmutableAgentId = ctx.get_required_param("to");
-    let value: ScImmutableInt64 = ctx.get_required_param("value");
+    let from: ScAgentId = ctx.get_required_param("from");
+    let to: ScAgentId = ctx.get_required_param("to");
+    let value: i64 = ctx.get_required_param("value");
 
-    Self::transfer_from(ctx, &from.value(), &to.value(), value.value());
+    Self::transfer_from(ctx, &from, &to, value);
 
     ctx.trace("ERC20::transferFrom [<]");
   }
@@ -104,10 +102,10 @@ pub trait IERC20 {
   fn func_approve(ctx: &ScFuncContext) {
     ctx.trace("ERC20::approve [>]");
 
-    let spender: ScImmutableAgentId = ctx.get_required_param("spender");
-    let value: ScImmutableInt64 = ctx.get_required_param("value");
+    let spender: ScAgentId = ctx.get_required_param("spender");
+    let value: i64 = ctx.get_required_param("value");
 
-    Self::approve(ctx, &spender.value(), value.value());
+    Self::approve(ctx, &spender, value);
 
     ctx.trace("ERC20::approve [<]");
   }
@@ -116,9 +114,9 @@ pub trait IERC20 {
   fn view_allowance(ctx: &ScViewContext) {
     ctx.trace("ERC20::allowance [>]");
 
-    let owner: ScImmutableAgentId = ctx.get_required_param("owner");
-    let spender: ScImmutableAgentId = ctx.get_required_param("spender");
-    let value: i64 = Self::allowance(ctx, &owner.value(), &spender.value());
+    let owner: ScAgentId = ctx.get_required_param("owner");
+    let spender: ScAgentId = ctx.get_required_param("spender");
+    let value: i64 = Self::allowance(ctx, &owner, &spender);
 
     ctx.result("allowance", value);
     ctx.trace("ERC20::allowance [<]");
@@ -151,10 +149,10 @@ pub trait IERC20Burnable: IERC20 {
   fn func_burn(ctx: &ScFuncContext) {
     ctx.trace("ERC20::burn [>]");
 
-    let value: ScImmutableInt64 = ctx.get_required_param("value");
-    let value: i64 = value.value();
+    let value: i64 = ctx.get_required_param("value");
+    let caller: ScAgentId = ctx.caller();
 
-    Self::burn(ctx, &ctx.caller(), value);
+    Self::burn(ctx, &caller, value);
 
     ctx.trace("ERC20::burn [<]");
   }
@@ -163,11 +161,8 @@ pub trait IERC20Burnable: IERC20 {
   fn func_burn_from(ctx: &ScFuncContext) {
     ctx.trace("ERC20::burnFrom [>]");
 
-    let from: ScImmutableAgentId = ctx.get_required_param("from");
-    let value: ScImmutableInt64 = ctx.get_required_param("value");
-
-    let from: ScAgentId = from.value();
-    let value: i64 = value.value();
+    let from: ScAgentId = ctx.get_required_param("from");
+    let value: i64 = ctx.get_required_param("value");
     let caller: ScAgentId = ctx.caller();
     let allowance: i64 = Self::allowance(ctx.view(), &from, &caller);
 

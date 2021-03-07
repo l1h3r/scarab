@@ -2,8 +2,6 @@ use wasmlib::ScAgentId;
 use wasmlib::ScBaseContext;
 use wasmlib::ScExports;
 use wasmlib::ScFuncContext;
-use wasmlib::ScImmutableAgentId;
-use wasmlib::ScImmutableInt64;
 use wasmlib::ScMutableMap;
 use wasmlib::ScViewContext;
 
@@ -106,9 +104,8 @@ impl<const TOKEN: Token> ERC20<TOKEN> {
   fn __init_fixed(ctx: &ScFuncContext) {
     ctx.trace("ERC20::init [>]");
 
-    let owner: ScImmutableAgentId = ctx.get_required_param("owner");
-    let total: ScImmutableInt64 = ctx.get_required_param("total");
-    let total: i64 = total.value();
+    let owner: ScAgentId = ctx.get_required_param("owner");
+    let total: i64 = ctx.get_required_param("total");
 
     ctx.require(total > 0, "invalid param: `total`");
 
@@ -116,7 +113,7 @@ impl<const TOKEN: Token> ERC20<TOKEN> {
     Self::__init_meta(ctx);
 
     // Mint initial tokens; transfer all to `owner`
-    Self::__mint(ctx, &owner.value(), total);
+    Self::__mint(ctx, &owner, total);
 
     ctx.trace("ERC20::init [<]");
   }
