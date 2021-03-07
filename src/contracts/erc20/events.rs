@@ -14,11 +14,7 @@ pub struct Approval {
 
 impl Approval {
   pub const fn new(owner: ScAgentId, spender: ScAgentId, value: i64) -> Self {
-    Self {
-      owner,
-      spender,
-      value,
-    }
+    Self { owner, spender, value }
   }
 }
 
