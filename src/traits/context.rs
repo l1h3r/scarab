@@ -8,7 +8,7 @@ use crate::traits::Container;
 use crate::traits::MapExt;
 use crate::traits::MapGet;
 use crate::traits::MapSet;
-use crate::traits::MapValue;
+use crate::traits::Value;
 
 pub trait ContextExt: ScBaseContext {
   fn get_param_container<T, U>(&self, key: &T) -> U
@@ -22,16 +22,16 @@ pub trait ContextExt: ScBaseContext {
   fn get_param<T, U>(&self, key: &T) -> U
   where
     T: MapKey + ?Sized,
+    U: Value,
     ScImmutableMap: MapGet<U::Container>,
-    U: MapValue<ScImmutableMap>,
   {
     self.params().get_value(key)
   }
 
   fn get_required_param<T>(&self, key: &str) -> T
   where
+    T: Value,
     ScImmutableMap: MapGet<T::Container>,
-    T: MapValue<ScImmutableMap>,
   {
     let this: T::Container = self.get_param_container(key);
 

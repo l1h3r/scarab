@@ -4,34 +4,38 @@ use wasmlib::*;
 // =============================================================================
 
 pub trait Value {
-  type Primitive;
+  type Container: Container<Value = Self>;
+  type ContainerMut: ContainerMut<Value = Self>;
+  type Primitive: ?Sized;
 }
 
 macro_rules! impl_Value {
-  ($ident:ty, $primitive:ty) => {
+  ($ident:ty, $primitive:ty, $container:ty, $container_mut:ty) => {
     impl Value for $ident {
+      type Container = $container;
+      type ContainerMut = $container_mut;
       type Primitive = $primitive;
     }
   };
-  ($(($ident:ty, $primitive:ty),)+) => {
+  ($(($ident:ty, $primitive:ty, $container:ty, $container_mut:ty),)+) => {
     $(
-      impl_Value!($ident, $primitive);
+      impl_Value!($ident, $primitive, $container, $container_mut);
     )+
   };
 }
 
 impl_Value! {
-  (ScAddress, [u8; 33]),
-  (ScAgentId, [u8; 37]),
-  (Vec<u8>, Vec<u8>), // no ScBytes
-  (ScChainId, [u8; 33]),
-  (ScColor, [u8; 32]),
-  (ScContractId, [u8; 37]),
-  (ScHash, [u8; 32]),
-  (ScHname, u32),
-  (i64, i64), // no ScInt64
-  (ScRequestId, [u8; 34]),
-  (String, String), // no ScString
+  (ScAddress, [u8; 33], ScImmutableAddress, ScMutableAddress),
+  (ScAgentId, [u8; 37], ScImmutableAgentId, ScMutableAgentId),
+  (Vec<u8>, Vec<u8>, ScImmutableBytes, ScMutableBytes),
+  (ScChainId, [u8; 33], ScImmutableChainId, ScMutableChainId),
+  (ScColor, [u8; 32], ScImmutableColor, ScMutableColor),
+  (ScContractId, [u8; 37], ScImmutableContractId, ScMutableContractId),
+  (ScHash, [u8; 32], ScImmutableHash, ScMutableHash),
+  (ScHname, u32, ScImmutableHname, ScMutableHname),
+  (i64, i64, ScImmutableInt64, ScMutableInt64),
+  (ScRequestId, [u8; 34], ScImmutableRequestId, ScMutableRequestId),
+  (String, String, ScImmutableString, ScMutableString),
 }
 
 // =============================================================================
@@ -293,54 +297,6 @@ impl MapSet for bool {
 // =============================================================================
 // =============================================================================
 
-pub trait MapValue<Map>: Sized
-where
-  Map: MapGet<Self::Container>,
-{
-  type Container: Container<Value = Self>;
-}
-
-macro_rules! impl_MapValue {
-  ($map:ident, $container:ident, $value:ty) => {
-    impl MapValue<$map> for $value {
-      type Container = $container;
-    }
-  };
-  ($(($map:ident, $container:ident, $value:ty),)+) => {
-    $(
-      impl_MapValue!($map, $container, $value);
-    )+
-  };
-}
-
-impl_MapValue! {
-  (ScImmutableMap, ScImmutableAddress, ScAddress),
-  (ScImmutableMap, ScImmutableAgentId, ScAgentId),
-  (ScImmutableMap, ScImmutableBytes, Vec<u8>),
-  (ScImmutableMap, ScImmutableChainId, ScChainId),
-  (ScImmutableMap, ScImmutableColor, ScColor),
-  (ScImmutableMap, ScImmutableContractId, ScContractId),
-  (ScImmutableMap, ScImmutableHash, ScHash),
-  (ScImmutableMap, ScImmutableHname, ScHname),
-  (ScImmutableMap, ScImmutableInt64, i64),
-  (ScImmutableMap, ScImmutableRequestId, ScRequestId),
-  (ScImmutableMap, ScImmutableString, String),
-  (ScMutableMap, ScMutableAddress, ScAddress),
-  (ScMutableMap, ScMutableAgentId, ScAgentId),
-  (ScMutableMap, ScMutableBytes, Vec<u8>),
-  (ScMutableMap, ScMutableChainId, ScChainId),
-  (ScMutableMap, ScMutableColor, ScColor),
-  (ScMutableMap, ScMutableContractId, ScContractId),
-  (ScMutableMap, ScMutableHash, ScHash),
-  (ScMutableMap, ScMutableHname, ScHname),
-  (ScMutableMap, ScMutableInt64, i64),
-  (ScMutableMap, ScMutableRequestId, ScRequestId),
-  (ScMutableMap, ScMutableString, String),
-}
-
-// =============================================================================
-// =============================================================================
-
 pub trait MapExt: Sized {
   fn get<T, U>(&self, key: &T) -> U
   where
@@ -353,10 +309,19 @@ pub trait MapExt: Sized {
   fn get_value<T, U>(&self, key: &T) -> U
   where
     T: MapKey + ?Sized,
-    U: MapValue<Self>,
+    U: Value,
     Self: MapGet<U::Container>,
   {
     self.mget(key).get()
+  }
+
+  fn set<T, U>(&self, key: &T, value: &U)
+  where
+    T: MapKey + ?Sized,
+    U: Value,
+    Self: MapGet<U::ContainerMut>,
+  {
+    self.mget(key).set(value);
   }
 }
 
