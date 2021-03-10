@@ -1,3 +1,4 @@
+mod color;
 mod context;
 mod encode;
 mod export;
@@ -5,6 +6,7 @@ mod unsafe_math;
 mod value;
 mod zero;
 
+pub use self::color::ColorExt;
 pub use self::context::ContextExt;
 pub use self::encode::Encode;
 pub use self::export::Export;
