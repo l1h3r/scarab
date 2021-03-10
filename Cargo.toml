@@ -3,6 +3,13 @@ name = "scarab"
 version = "0.1.0"
 authors = ["l1h3r <devin.turner09@gmail.com>"]
 edition = "2018"
+license = "MIT OR Apache-2.0"
+description = "Tools for working with IOTA Smart Contracts"
+repository = "https://github.com/l1h3r/scarab"
+keywords = ["blockchain", "iota", "wasm", "webassembly"]
+categories = []
+include = ["src/**/*.rs", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+readme = "README.md"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
