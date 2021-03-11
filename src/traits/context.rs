@@ -28,18 +28,26 @@ pub trait ContextExt: ScBaseContext {
     self.params().get_value(key)
   }
 
-  fn get_required_param<T>(&self, key: &str) -> T
+  fn get_required_param_container<T>(&self, key: &str) -> T
   where
-    T: Value,
-    ScImmutableMap: MapGet<T::Container>,
+    T: Container,
+    ScImmutableMap: MapGet<T>,
   {
-    let this: T::Container = self.get_param_container(key);
+    let this: T = self.params().get(key);
 
     if !this.has() {
       self.panic(&format!("missing required param: {:?}", key));
     }
 
-    this.get()
+    this
+  }
+
+  fn get_required_param<T>(&self, key: &str) -> T
+  where
+    T: Value,
+    ScImmutableMap: MapGet<T::Container>,
+  {
+    self.get_required_param_container(key).get()
   }
 
   fn result<T, U>(&self, key: &T, value: U)

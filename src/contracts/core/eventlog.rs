@@ -53,7 +53,7 @@ impl EventLog {
   }
 
   fn params(&self) -> ScMutableMap {
-    params! {
+    map! {
       CORE_EVENTLOG_PARAM_CONTRACT_HNAME => &self.0,
     }
   }

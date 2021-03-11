@@ -55,39 +55,39 @@ pub trait IERC20 {
 
   #[doc(hidden)]
   fn view_total_supply(ctx: &ScViewContext) {
-    ctx.trace("ERC20::totalSupply [>]");
+    trace!(ctx, "ERC20::totalSupply [>]");
 
     ctx.result("supply", Self::total_supply(ctx));
 
-    ctx.trace("ERC20::totalSupply [<]");
+    trace!(ctx, "ERC20::totalSupply [<]");
   }
 
   #[doc(hidden)]
   fn view_balance_of(ctx: &ScViewContext) {
-    ctx.trace("ERC20::balanceOf [>]");
+    trace!(ctx, "ERC20::balanceOf [>]");
 
     let owner: ScAgentId = ctx.get_required_param("owner");
     let value: i64 = Self::balance_of(ctx, &owner);
 
     ctx.result("balance", value);
-    ctx.trace("ERC20::balanceOf [<]");
+    trace!(ctx, "ERC20::balanceOf [<]");
   }
 
   #[doc(hidden)]
   fn func_transfer(ctx: &ScFuncContext) {
-    ctx.trace("ERC20::transfer [>]");
+    trace!(ctx, "ERC20::transfer [>]");
 
     let to: ScAgentId = ctx.get_required_param("to");
     let value: i64 = ctx.get_required_param("value");
 
     Self::transfer(ctx, &to, value);
 
-    ctx.trace("ERC20::transfer [<]");
+    trace!(ctx, "ERC20::transfer [<]");
   }
 
   #[doc(hidden)]
   fn func_transfer_from(ctx: &ScFuncContext) {
-    ctx.trace("ERC20::transferFrom [>]");
+    trace!(ctx, "ERC20::transferFrom [>]");
 
     let from: ScAgentId = ctx.get_required_param("from");
     let to: ScAgentId = ctx.get_required_param("to");
@@ -95,31 +95,31 @@ pub trait IERC20 {
 
     Self::transfer_from(ctx, &from, &to, value);
 
-    ctx.trace("ERC20::transferFrom [<]");
+    trace!(ctx, "ERC20::transferFrom [<]");
   }
 
   #[doc(hidden)]
   fn func_approve(ctx: &ScFuncContext) {
-    ctx.trace("ERC20::approve [>]");
+    trace!(ctx, "ERC20::approve [>]");
 
     let spender: ScAgentId = ctx.get_required_param("spender");
     let value: i64 = ctx.get_required_param("value");
 
     Self::approve(ctx, &spender, value);
 
-    ctx.trace("ERC20::approve [<]");
+    trace!(ctx, "ERC20::approve [<]");
   }
 
   #[doc(hidden)]
   fn view_allowance(ctx: &ScViewContext) {
-    ctx.trace("ERC20::allowance [>]");
+    trace!(ctx, "ERC20::allowance [>]");
 
     let owner: ScAgentId = ctx.get_required_param("owner");
     let spender: ScAgentId = ctx.get_required_param("spender");
     let value: i64 = Self::allowance(ctx, &owner, &spender);
 
     ctx.result("allowance", value);
-    ctx.trace("ERC20::allowance [<]");
+    trace!(ctx, "ERC20::allowance [<]");
   }
 }
 
@@ -147,19 +147,19 @@ pub trait IERC20Burnable: IERC20 {
 
   #[doc(hidden)]
   fn func_burn(ctx: &ScFuncContext) {
-    ctx.trace("ERC20::burn [>]");
+    trace!(ctx, "ERC20::burn [>]");
 
     let value: i64 = ctx.get_required_param("value");
     let caller: ScAgentId = ctx.caller();
 
     Self::burn(ctx, &caller, value);
 
-    ctx.trace("ERC20::burn [<]");
+    trace!(ctx, "ERC20::burn [<]");
   }
 
   #[doc(hidden)]
   fn func_burn_from(ctx: &ScFuncContext) {
-    ctx.trace("ERC20::burnFrom [>]");
+    trace!(ctx, "ERC20::burnFrom [>]");
 
     let from: ScAgentId = ctx.get_required_param("from");
     let value: i64 = ctx.get_required_param("value");
@@ -171,6 +171,6 @@ pub trait IERC20Burnable: IERC20 {
     Self::__approve(ctx, &from, &caller, allowance - value);
     Self::burn(ctx, &from, value);
 
-    ctx.trace("ERC20::burnFrom [<]");
+    trace!(ctx, "ERC20::burnFrom [<]");
   }
 }

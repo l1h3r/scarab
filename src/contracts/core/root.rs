@@ -63,7 +63,7 @@ impl Root {
   ///
   /// Note: Ownership is not transferred until claimed by the recipient.
   pub fn offer_ownership(ctx: &ScFuncContext, owner: &ScAgentId) {
-    let params: ScMutableMap = params! {
+    let params: ScMutableMap = map! {
       CORE_ROOT_PARAM_CHAIN_OWNER => owner,
     };
 
@@ -77,7 +77,7 @@ impl Root {
 
   /// Grants permission to deploy contracts.
   pub fn grant_deploy_permission(ctx: &ScFuncContext, deployer: &ScAgentId) {
-    let params: ScMutableMap = params! {
+    let params: ScMutableMap = map! {
       CORE_ROOT_PARAM_DEPLOYER => deployer,
     };
 
@@ -86,7 +86,7 @@ impl Root {
 
   /// Revokes permission to deploy contracts.
   pub fn revoke_deploy_permission(ctx: &ScFuncContext, deployer: &ScAgentId) {
-    let params: ScMutableMap = params! {
+    let params: ScMutableMap = map! {
       CORE_ROOT_PARAM_DEPLOYER => deployer,
     };
 
@@ -112,7 +112,7 @@ impl Root {
       return ctx.panic("invalid contract fee: empty");
     }
 
-    let params: ScMutableMap = params! {
+    let params: ScMutableMap = map! {
       CORE_ROOT_PARAM_HNAME => contract,
     };
 
@@ -122,7 +122,7 @@ impl Root {
 
   /// Returns the data of the specified smart `contract`.
   pub fn contract(ctx: &ScViewContext, contract: &ScHname) -> Vec<u8> {
-    let params: ScMutableMap = params! {
+    let params: ScMutableMap = map! {
       CORE_ROOT_PARAM_HNAME => contract,
     };
 
@@ -138,7 +138,7 @@ impl Root {
 
   /// Returns general information about the fees of the specified `contract`.
   pub fn fees(ctx: &ScViewContext, contract: &ScHname) -> Fees {
-    let params: ScMutableMap = params! {
+    let params: ScMutableMap = map! {
       CORE_ROOT_PARAM_HNAME => contract,
     };
 
@@ -176,7 +176,7 @@ impl Deploy {
   }
 
   fn params(&self) -> ScMutableMap {
-    let params: ScMutableMap = params! {
+    let params: ScMutableMap = map! {
       CORE_ROOT_PARAM_PROGRAM_HASH => &self.contract,
       CORE_ROOT_PARAM_NAME => &self.name,
     };

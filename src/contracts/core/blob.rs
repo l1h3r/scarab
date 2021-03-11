@@ -38,7 +38,7 @@ impl Blob {
 
   /// Retrieves the data chunk of the specified blob field.
   pub fn field(ctx: &ScViewContext, hash: &ScHash, field: &[u8]) -> Vec<u8> {
-    let params: ScMutableMap = params! {
+    let params: ScMutableMap = map! {
       CORE_BLOB_PARAM_HASH => hash,
       CORE_BLOB_PARAM_FIELD => &field.to_vec(),
     };
@@ -50,7 +50,7 @@ impl Blob {
 
   /// Returns a map of `field => chunksize` for all fields in the specified blob.
   pub fn info(ctx: &ScViewContext, hash: &ScHash) -> FieldSizes {
-    let params: ScMutableMap = params! {
+    let params: ScMutableMap = map! {
       CORE_BLOB_PARAM_HASH => hash,
     };
 

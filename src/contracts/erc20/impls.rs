@@ -74,23 +74,23 @@ pub struct ERC20<const TOKEN: Token>;
 impl<const TOKEN: Token> ERC20<TOKEN> {
   /// Returns the name of the token.
   fn name(ctx: &ScViewContext) {
-    ctx.trace("ERC20::name [>]");
+    trace!(ctx, "ERC20::name [>]");
     ctx.result("name", ctx.state().get_string("name").value());
-    ctx.trace("ERC20::name [<]");
+    trace!(ctx, "ERC20::name [<]");
   }
 
   /// Returns the symbol of the token.
   fn symbol(ctx: &ScViewContext) {
-    ctx.trace("ERC20::symbol [>]");
+    trace!(ctx, "ERC20::symbol [>]");
     ctx.result("symbol", ctx.state().get_string("symbol").value());
-    ctx.trace("ERC20::symbol [<]");
+    trace!(ctx, "ERC20::symbol [<]");
   }
 
   /// Returns the number of decimals the token uses.
   fn decimals(ctx: &ScViewContext) {
-    ctx.trace("ERC20::decimals [>]");
+    trace!(ctx, "ERC20::decimals [>]");
     ctx.result("decimals", ctx.state().get_int64("decimals").value());
-    ctx.trace("ERC20::decimals [<]");
+    trace!(ctx, "ERC20::decimals [<]");
   }
 
   fn __init_meta(ctx: &ScFuncContext) {
@@ -102,7 +102,7 @@ impl<const TOKEN: Token> ERC20<TOKEN> {
   }
 
   fn __init_fixed(ctx: &ScFuncContext) {
-    ctx.trace("ERC20::init [>]");
+    trace!(ctx, "ERC20::init [>]");
 
     let owner: ScAgentId = ctx.get_required_param("owner");
     let total: i64 = ctx.get_required_param("total");
@@ -115,7 +115,7 @@ impl<const TOKEN: Token> ERC20<TOKEN> {
     // Mint initial tokens; transfer all to `owner`
     Self::__mint(ctx, &owner, total);
 
-    ctx.trace("ERC20::init [<]");
+    trace!(ctx, "ERC20::init [<]");
   }
 
   fn __mint(ctx: &ScFuncContext, to: &ScAgentId, value: i64) {

@@ -27,7 +27,7 @@ pub struct Accounts;
 impl Accounts {
   /// Moves `transfers` (tokens) to the on-chain account of `agent`.
   pub fn deposit(ctx: &ScFuncContext, transfers: ScTransfers, agent: &ScAgentId) -> ScImmutableMap {
-    let params: ScMutableMap = params! {
+    let params: ScMutableMap = map! {
       CORE_ACCOUNTS_PARAM_AGENT_ID => agent,
     };
 
@@ -41,7 +41,7 @@ impl Accounts {
 
   /// Returns a map of the assets controller by the specified `agent`.
   pub fn balance(ctx: &ScViewContext, agent: &ScAgentId) -> Balances {
-    let params: ScMutableMap = params! {
+    let params: ScMutableMap = map! {
       CORE_ACCOUNTS_PARAM_AGENT_ID => agent,
     };
 

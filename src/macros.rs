@@ -13,15 +13,22 @@ macro_rules! trace {
 }
 
 #[macro_export]
-macro_rules! params {
+macro_rules! imap {
+  ($($tt:tt)*) => {
+    map!($($tt)*).immutable()
+  };
+}
+
+#[macro_export]
+macro_rules! map {
   (@internal $($key:expr => $value:expr),* $(,)*) => {{
-    let params: ScMutableMap = ScMutableMap::new();
+    let params: ::wasmlib::ScMutableMap = ::wasmlib::ScMutableMap::new();
     $(
       params.set($key, $value);
     )*
     params
   }};
   ($($tt:tt)*) => {
-    params!(@internal $($tt)*)
+    map!(@internal $($tt)*)
   };
 }
