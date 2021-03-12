@@ -1,5 +1,6 @@
 use core::convert::TryInto;
 use wasmlib::MapKey;
+use wasmlib::ScBaseContext;
 use wasmlib::ScFuncContext;
 use wasmlib::ScHash;
 use wasmlib::ScImmutableBytes;
@@ -11,12 +12,16 @@ use wasmlib::CORE_BLOB_FUNC_STORE_BLOB;
 use wasmlib::CORE_BLOB_PARAM_BYTES;
 use wasmlib::CORE_BLOB_PARAM_FIELD;
 use wasmlib::CORE_BLOB_PARAM_HASH;
+use wasmlib::CORE_BLOB_PARAM_PROGRAM_BINARY;
+use wasmlib::CORE_BLOB_PARAM_VM_TYPE;
 use wasmlib::CORE_BLOB_VIEW_GET_BLOB_FIELD;
 use wasmlib::CORE_BLOB_VIEW_GET_BLOB_INFO;
 use wasmlib::CORE_BLOB_VIEW_LIST_BLOBS;
 
 use crate::contracts::core::Contract;
 use crate::traits::MapExt;
+
+const VM: &str = "wasmtimevm";
 
 /// A simple wrapper around the core [`blob`][SPEC] contract.
 ///
@@ -34,6 +39,21 @@ impl Blob {
     ctx
       .call(CORE_BLOB, CORE_BLOB_FUNC_STORE_BLOB, blob.into(), None)
       .get_value(CORE_BLOB_PARAM_HASH)
+  }
+
+  pub fn store_wasm(ctx: &ScFuncContext, binary: &[u8]) -> ScHash {
+    let params: ScMutableMap = map! {
+      CORE_BLOB_PARAM_VM_TYPE => &VM.to_string(),
+      CORE_BLOB_PARAM_PROGRAM_BINARY => &binary.to_vec(),
+    };
+
+    Self::store(ctx, params)
+  }
+
+  pub fn load_wasm(ctx: &ScViewContext, hash: &ScHash) -> Vec<u8> {
+    ctx.require(Self::is_wasm(ctx, hash), "invalid wasm binary");
+
+    Self::field(ctx, hash, CORE_BLOB_PARAM_PROGRAM_BINARY.as_bytes())
   }
 
   /// Retrieves the data chunk of the specified blob field.
@@ -55,6 +75,10 @@ impl Blob {
     };
 
     ctx.call(CORE_BLOB, CORE_BLOB_VIEW_GET_BLOB_INFO, params.into()).into()
+  }
+
+  fn is_wasm(ctx: &ScViewContext, hash: &ScHash) -> bool {
+    Self::field(ctx, hash, CORE_BLOB_PARAM_VM_TYPE.as_bytes()) == VM.as_bytes()
   }
 }
 

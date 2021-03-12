@@ -7,6 +7,7 @@ use wasmlib::ScBaseContext;
 use wasmlib::ScChainId;
 use wasmlib::ScColor;
 use wasmlib::ScFuncContext;
+use wasmlib::ScHash;
 use wasmlib::ScHname;
 use wasmlib::ScImmutableMap;
 use wasmlib::ScMutableMap;
@@ -154,19 +155,20 @@ impl Contract for Root {
 // =============================================================================
 // =============================================================================
 
-#[derive(Clone, PartialEq)]
 pub struct Deploy {
-  contract: ScHname,
+  program: ScHash,
   name: String,
   description: Option<String>,
+  init_params: ScMutableMap,
 }
 
 impl Deploy {
-  pub const fn new(contract: ScHname, name: String) -> Self {
+  pub fn new(program: ScHash, name: String) -> Self {
     Self {
-      contract,
+      program,
       name,
       description: None,
+      init_params: ScMutableMap::new(),
     }
   }
 
@@ -175,11 +177,16 @@ impl Deploy {
     self
   }
 
-  fn params(&self) -> ScMutableMap {
-    let params: ScMutableMap = map! {
-      CORE_ROOT_PARAM_PROGRAM_HASH => &self.contract,
-      CORE_ROOT_PARAM_NAME => &self.name,
-    };
+  pub fn init_params(mut self, value: ScMutableMap) -> Self {
+    self.init_params = value;
+    self
+  }
+
+  fn params(self) -> ScMutableMap {
+    let params: ScMutableMap = self.init_params;
+
+    params.set(CORE_ROOT_PARAM_PROGRAM_HASH, &self.program);
+    params.set(CORE_ROOT_PARAM_NAME, &self.name);
 
     if let Some(value) = self.description.as_ref() {
       params.set(CORE_ROOT_PARAM_DESCRIPTION, value);

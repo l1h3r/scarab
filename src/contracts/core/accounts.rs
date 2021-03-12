@@ -39,6 +39,19 @@ impl Accounts {
     )
   }
 
+  pub fn withdraw(ctx: &ScFuncContext, location: Location) -> ScImmutableMap {
+    match location {
+      Location::Address => {
+        ctx.require(ctx.caller().is_address(), "caller must be an address");
+        ctx.call(CORE_ACCOUNTS, CORE_ACCOUNTS_FUNC_WITHDRAW_TO_ADDRESS, None, None)
+      }
+      Location::Chain => {
+        ctx.require(!ctx.caller().is_address(), "caller must be a smart contract");
+        ctx.call(CORE_ACCOUNTS, CORE_ACCOUNTS_FUNC_WITHDRAW_TO_CHAIN, None, None)
+      }
+    }
+  }
+
   /// Returns a map of the assets controller by the specified `agent`.
   pub fn balance(ctx: &ScViewContext, agent: &ScAgentId) -> Balances {
     let params: ScMutableMap = map! {

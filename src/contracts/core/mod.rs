@@ -14,6 +14,7 @@ pub use self::eventlog::EventFilter;
 pub use self::eventlog::EventLog;
 pub use self::root::Chain;
 pub use self::root::Contracts;
+pub use self::root::Deploy;
 pub use self::root::Fee;
 pub use self::root::Fees;
 pub use self::root::Root;
