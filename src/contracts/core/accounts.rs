@@ -2,6 +2,7 @@ use wasmlib::ScAgentId;
 use wasmlib::ScBaseContext;
 use wasmlib::ScColor;
 use wasmlib::ScFuncContext;
+use wasmlib::ScImmutableColorArray;
 use wasmlib::ScImmutableMap;
 use wasmlib::ScMutableMap;
 use wasmlib::ScTransfers;
@@ -14,6 +15,7 @@ use wasmlib::CORE_ACCOUNTS_PARAM_AGENT_ID;
 use wasmlib::CORE_ACCOUNTS_VIEW_ACCOUNTS;
 use wasmlib::CORE_ACCOUNTS_VIEW_BALANCE;
 use wasmlib::CORE_ACCOUNTS_VIEW_TOTAL_ASSETS;
+use wasmlib::KEY_COLOR;
 
 use crate::contracts::core::Contract;
 use crate::traits::MapExt;
@@ -102,6 +104,10 @@ pub struct Balances(ScImmutableMap);
 impl Balances {
   pub fn get(&self, color: &ScColor) -> i64 {
     self.0.get_value(color)
+  }
+
+  pub fn colors(&self) -> ScImmutableColorArray {
+    self.0.get_color_array(&KEY_COLOR)
   }
 }
 

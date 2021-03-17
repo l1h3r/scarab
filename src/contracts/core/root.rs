@@ -15,25 +15,20 @@ use wasmlib::ScViewContext;
 use wasmlib::CORE_ROOT;
 use wasmlib::CORE_ROOT_FUNC_CLAIM_CHAIN_OWNERSHIP;
 use wasmlib::CORE_ROOT_FUNC_DELEGATE_CHAIN_OWNERSHIP;
-use wasmlib::CORE_ROOT_FUNC_DEPLOY_CONTRACT;
 use wasmlib::CORE_ROOT_FUNC_GRANT_DEPLOY_PERMISSION;
 use wasmlib::CORE_ROOT_FUNC_REVOKE_DEPLOY_PERMISSION;
 use wasmlib::CORE_ROOT_FUNC_SET_CONTRACT_FEE;
 use wasmlib::CORE_ROOT_FUNC_SET_DEFAULT_FEE;
 use wasmlib::CORE_ROOT_PARAM_CHAIN_OWNER;
-use wasmlib::CORE_ROOT_PARAM_DATA;
 use wasmlib::CORE_ROOT_PARAM_DEPLOYER;
-use wasmlib::CORE_ROOT_PARAM_DESCRIPTION;
-use wasmlib::CORE_ROOT_PARAM_FEE_COLOR;
 use wasmlib::CORE_ROOT_PARAM_HNAME;
-use wasmlib::CORE_ROOT_PARAM_NAME;
 use wasmlib::CORE_ROOT_PARAM_OWNER_FEE;
-use wasmlib::CORE_ROOT_PARAM_PROGRAM_HASH;
 use wasmlib::CORE_ROOT_PARAM_VALIDATOR_FEE;
 use wasmlib::CORE_ROOT_VIEW_FIND_CONTRACT;
 use wasmlib::CORE_ROOT_VIEW_GET_CHAIN_INFO;
 use wasmlib::CORE_ROOT_VIEW_GET_FEE_INFO;
 
+use crate::consts::*;
 use crate::contracts::core::Contract;
 use crate::traits::ColorExt;
 use crate::traits::MapExt;
@@ -56,8 +51,13 @@ pub struct Root;
 
 impl Root {
   /// Deploys a new smart contract to the chain.
-  pub fn deploy(ctx: &ScFuncContext, config: Deploy) {
-    ctx.call(CORE_ROOT, CORE_ROOT_FUNC_DEPLOY_CONTRACT, config.params().into(), None);
+  pub fn deploy(ctx: &ScFuncContext, deploy: Deploy<'_>) {
+    ctx.deploy(
+      deploy.program,
+      deploy.name,
+      deploy.description.unwrap_or("N/A"),
+      deploy.init_params,
+    );
   }
 
   /// Offers to delegate ownership of the chain to the specified `owner`.
@@ -155,44 +155,31 @@ impl Contract for Root {
 // =============================================================================
 // =============================================================================
 
-pub struct Deploy {
-  program: ScHash,
-  name: String,
-  description: Option<String>,
-  init_params: ScMutableMap,
+pub struct Deploy<'a> {
+  program: &'a ScHash,
+  name: &'a str,
+  description: Option<&'a str>,
+  init_params: Option<ScMutableMap>,
 }
 
-impl Deploy {
-  pub fn new(program: ScHash, name: String) -> Self {
+impl<'a> Deploy<'a> {
+  pub fn new(program: &'a ScHash, name: &'a str) -> Self {
     Self {
       program,
       name,
       description: None,
-      init_params: ScMutableMap::new(),
+      init_params: None,
     }
   }
 
-  pub fn description(mut self, value: String) -> Self {
+  pub fn description(mut self, value: &'a str) -> Self {
     self.description = Some(value);
     self
   }
 
   pub fn init_params(mut self, value: ScMutableMap) -> Self {
-    self.init_params = value;
+    self.init_params = Some(value);
     self
-  }
-
-  fn params(self) -> ScMutableMap {
-    let params: ScMutableMap = self.init_params;
-
-    params.set(CORE_ROOT_PARAM_PROGRAM_HASH, &self.program);
-    params.set(CORE_ROOT_PARAM_NAME, &self.name);
-
-    if let Some(value) = self.description.as_ref() {
-      params.set(CORE_ROOT_PARAM_DESCRIPTION, value);
-    }
-
-    params
   }
 }
 

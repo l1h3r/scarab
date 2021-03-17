@@ -7,12 +7,11 @@ use wasmlib::CORE_EVENTLOG;
 use wasmlib::CORE_EVENTLOG_PARAM_CONTRACT_HNAME;
 use wasmlib::CORE_EVENTLOG_PARAM_FROM_TS;
 use wasmlib::CORE_EVENTLOG_PARAM_MAX_LAST_RECORDS;
-use wasmlib::CORE_EVENTLOG_PARAM_NUM_RECORDS;
-use wasmlib::CORE_EVENTLOG_PARAM_RECORDS;
 use wasmlib::CORE_EVENTLOG_PARAM_TO_TS;
 use wasmlib::CORE_EVENTLOG_VIEW_GET_NUM_RECORDS;
 use wasmlib::CORE_EVENTLOG_VIEW_GET_RECORDS;
 
+use crate::consts::*;
 use crate::contracts::core::Contract;
 use crate::traits::MapExt;
 

@@ -9,15 +9,13 @@ use wasmlib::ScMutableMap;
 use wasmlib::ScViewContext;
 use wasmlib::CORE_BLOB;
 use wasmlib::CORE_BLOB_FUNC_STORE_BLOB;
-use wasmlib::CORE_BLOB_PARAM_BYTES;
 use wasmlib::CORE_BLOB_PARAM_FIELD;
 use wasmlib::CORE_BLOB_PARAM_HASH;
-use wasmlib::CORE_BLOB_PARAM_PROGRAM_BINARY;
-use wasmlib::CORE_BLOB_PARAM_VM_TYPE;
 use wasmlib::CORE_BLOB_VIEW_GET_BLOB_FIELD;
 use wasmlib::CORE_BLOB_VIEW_GET_BLOB_INFO;
 use wasmlib::CORE_BLOB_VIEW_LIST_BLOBS;
 
+use crate::consts::*;
 use crate::contracts::core::Contract;
 use crate::traits::MapExt;
 

@@ -6,8 +6,10 @@ use wasmlib::ScHash;
 use wasmlib::ScRequestId;
 
 pub trait Zero: Sized {
+  /// Returns the `0` representation of `Self`.
   fn zero() -> Self;
 
+  /// Returns `true` if the value is `0`.
   fn is_zero(&self) -> bool;
 }
 
