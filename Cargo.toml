@@ -15,4 +15,5 @@ readme = "README.md"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+paste = { version = "1.0"}
 wasmlib = { git = "https://github.com/iotaledger/wasp", branch = "develop" }
