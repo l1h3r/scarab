@@ -1,8 +1,8 @@
 use wasmlib::*;
 
-type ScBytes = Vec<u8>;
-type ScInt64 = i64;
-type ScString = String;
+use crate::types::ScBytes;
+use crate::types::ScInt64;
+use crate::types::ScString;
 
 /// A common interface for smart contract values.
 pub trait Value {

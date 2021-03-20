@@ -14,6 +14,10 @@ readme = "README.md"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[workspace]
+members = ["derive"]
+
 [dependencies]
 paste = { version = "1.0"}
+scarab-derive = { version = "=0.1.0", path = "derive" }
 wasmlib = { git = "https://github.com/iotaledger/wasp", branch = "develop" }

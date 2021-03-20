@@ -4,6 +4,7 @@ mod ext;
 mod unsafe_math;
 mod zero;
 
+pub use self::encode::Decode;
 pub use self::encode::Encode;
 pub use self::export::Export;
 pub use self::ext::ColorExt;
