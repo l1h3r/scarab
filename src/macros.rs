@@ -11,7 +11,7 @@
 #[macro_export]
 macro_rules! log {
   ($ctx:expr, $($tt:tt)*) => {
-    ::wasmlib::ScBaseContext::log($ctx, &format!($($tt)*))
+    $crate::wasmlib::ScBaseContext::log($ctx, &format!($($tt)*))
   };
 }
 
@@ -28,7 +28,7 @@ macro_rules! log {
 #[macro_export]
 macro_rules! trace {
   ($ctx:expr, $($tt:tt)*) => {
-    ::wasmlib::ScBaseContext::trace($ctx, &format!($($tt)*))
+    $crate::wasmlib::ScBaseContext::trace($ctx, &format!($($tt)*))
   };
 }
 
@@ -69,7 +69,7 @@ macro_rules! map {
 #[doc(hidden)]
 macro_rules! map_internal {
   (@internal $($key:expr => $value:expr),* $(,)*) => {{
-    let params: ::wasmlib::ScMutableMap = ::wasmlib::ScMutableMap::new();
+    let params: $crate::wasmlib::ScMutableMap = $crate::wasmlib::ScMutableMap::new();
     $(
       params.set($key, $value);
     )*

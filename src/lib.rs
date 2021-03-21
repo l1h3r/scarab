@@ -5,6 +5,9 @@
 // Enable derive macros within this crate
 extern crate self as scarab;
 
+// Re-export wasmlib for convenience
+pub use ::wasmlib;
+
 #[macro_use]
 mod macros;
 
