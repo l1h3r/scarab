@@ -13,6 +13,7 @@
 )]
 
 // Enable derive macros within this crate
+#[allow(unused_extern_crates)]
 extern crate self as scarab;
 
 // Re-export wasmlib for convenience
