@@ -10,8 +10,8 @@
 /// ```
 #[macro_export]
 macro_rules! log {
-  ($ctx:expr, $($tt:tt)*) => {
-    $crate::wasmlib::ScBaseContext::log($ctx, &format!($($tt)*))
+  ($($tt:tt)*) => {
+    $crate::wasmlib::host::log(&format!($($tt)*))
   };
 }
 
@@ -27,8 +27,8 @@ macro_rules! log {
 /// ```
 #[macro_export]
 macro_rules! trace {
-  ($ctx:expr, $($tt:tt)*) => {
-    $crate::wasmlib::ScBaseContext::trace($ctx, &format!($($tt)*))
+  ($($tt:tt)*) => {
+    $crate::wasmlib::host::trace(&format!($($tt)*))
   };
 }
 

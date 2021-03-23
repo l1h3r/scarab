@@ -21,7 +21,7 @@ members = ["derive"]
 paste = { version = "1.0"}
 rand_core = { version = "0.6", default-features = false, optional = true }
 scarab-derive = { version = "=0.1.0", path = "derive" }
-wasmlib = { git = "https://github.com/iotaledger/wasp", branch = "develop" }
+wasmlib = { git = "https://github.com/iotaledger/wasp", rev = "57acc04b8df0927d3206649b24bdc2f1d3e1cbbc" }
 
 [features]
 default = [
