@@ -1,3 +1,7 @@
+//! Commonly used constants.
+
+pub const INIT: &str = "init";
+
 pub const CORE_BLOB_PARAM_BYTES: &str = "bytes";
 pub const CORE_BLOB_PARAM_PROGRAM_BINARY: &str = "p";
 pub const CORE_BLOB_PARAM_PROGRAM_DESCRIPTION: &str = "d";

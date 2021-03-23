@@ -1,6 +1,6 @@
 /// Logs an informational message.
 ///
-/// This macro is similar to [`println!`] from the std library.
+/// This macro is similar to [println!] from the std library.
 ///
 /// ## Examples
 ///
@@ -17,7 +17,7 @@ macro_rules! log {
 
 /// Logs a debug message.
 ///
-/// This macro is similar to [`println!`] from the std library.
+/// This macro is similar to [println!] from the std library.
 ///
 /// ## Examples
 ///
@@ -32,7 +32,7 @@ macro_rules! trace {
   };
 }
 
-/// Creates a new [`ScImmutableMap`][`wasmlib::ScImmutableMap`] from a set of
+/// Creates a new [ScImmutableMap][wasmlib::ScImmutableMap] from a set of
 /// initial values.
 ///
 /// ```
@@ -48,7 +48,7 @@ macro_rules! imap {
   };
 }
 
-/// Creates a new [`ScMutableMap`][`wasmlib::ScMutableMap`] from a set of
+/// Creates a new [ScMutableMap][wasmlib::ScMutableMap] from a set of
 /// initial values.
 ///
 /// ```

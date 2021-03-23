@@ -4,7 +4,7 @@ use crate::traits::Container;
 use crate::traits::ContainerMut;
 use crate::traits::Value;
 
-/// A common interface for retrieving [`values`][`Value`] from a map.
+/// A common interface for retrieving [values][Value] from a map.
 pub trait MapGet<Value> {
   /// Returns the value specified by `key`.
   fn mget<U>(&self, key: &U) -> Value
@@ -165,9 +165,7 @@ impl MapSet for bool {
 // =============================================================================
 // =============================================================================
 
-/// Map-related extensions.
-///
-/// This is just a bridge between [`Value`], [`Container`], and [`MapGet`].
+/// Extensions for [ScImmutableMap] and [ScMutableMap].
 pub trait MapExt: Sized {
   /// Returns the container value specified by `key`.
   fn get<T, U>(&self, key: &T) -> U

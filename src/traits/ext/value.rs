@@ -24,7 +24,7 @@ pub trait Container {
   /// Returns `true` if the container has a non-empty value.
   fn has(&self) -> bool;
 
-  /// Returns the inner [`value`][`Self::Value`] of the container.
+  /// Returns the inner [value][Self::Value] of the container.
   fn get(&self) -> Self::Value;
 }
 
@@ -33,7 +33,7 @@ pub trait Container {
 
 /// A common interface for mutable value containers.
 pub trait ContainerMut: Container {
-  /// Sets a new inner [`value`][`Container::Value`].
+  /// Sets a new inner [value][Container::Value].
   fn set(&self, value: &Self::Value);
 }
 

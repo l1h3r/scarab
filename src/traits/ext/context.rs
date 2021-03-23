@@ -11,7 +11,12 @@ use crate::traits::MapGet;
 use crate::traits::MapSet;
 use crate::traits::Value;
 
-pub trait ContextExt: ScBaseContext {
+mod private {
+  pub trait Sealed {}
+}
+
+/// Extensions for [ScViewContext] and [ScFuncContext].
+pub trait ContextExt: private::Sealed + ScBaseContext {
   type State;
 
   //
@@ -121,6 +126,9 @@ pub trait ContextExt: ScBaseContext {
   #[doc(hidden)]
   fn __state(&self) -> Self::State;
 }
+
+impl private::Sealed for ScViewContext {}
+impl private::Sealed for ScFuncContext {}
 
 impl ContextExt for ScViewContext {
   type State = ScImmutableMap;

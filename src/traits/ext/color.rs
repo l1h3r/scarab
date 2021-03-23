@@ -9,6 +9,7 @@ mod private {
   pub trait Sealed {}
 }
 
+/// Extensions for [ScColor].
 pub trait ColorExt: private::Sealed {
   fn is_iota(&self) -> bool {
     self.__bytes(private::Private) == IOTA.to_bytes()
@@ -16,6 +17,10 @@ pub trait ColorExt: private::Sealed {
 
   fn is_mint(&self) -> bool {
     self.__bytes(private::Private) == MINT.to_bytes()
+  }
+
+  fn is_custom(&self) -> bool {
+    !self.is_iota() && !self.is_mint()
   }
 
   fn name(&self) -> Cow<'_, str> {
