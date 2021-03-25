@@ -4,7 +4,6 @@ use wasmlib::ScAddress;
 use wasmlib::ScAgentId;
 use wasmlib::ScChainId;
 use wasmlib::ScColor;
-use wasmlib::ScContractId;
 use wasmlib::ScHash;
 use wasmlib::ScHname;
 use wasmlib::ScRequestId;
@@ -94,7 +93,6 @@ impl_Encode! {
   (ScBytes, bytes),
   (ScChainId, chain_id),
   (ScColor, color),
-  (ScContractId, contract_id),
   (ScHash, hash),
   (ScHname, hname),
   (ScInt64, int64),

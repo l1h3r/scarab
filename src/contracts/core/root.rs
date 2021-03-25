@@ -31,7 +31,10 @@ use wasmlib::CORE_ROOT_VIEW_GET_FEE_INFO;
 use crate::consts::*;
 use crate::contracts::core::Contract;
 use crate::traits::ColorExt;
+use crate::traits::Decode as _;
 use crate::traits::MapExt;
+use crate::Decode;
+use crate::Encode;
 
 const CORE_ROOT_VAR_CHAIN_ID: &str = "c";
 const CORE_ROOT_VAR_CHAIN_COLOR: &str = "co";
@@ -121,15 +124,17 @@ impl Root {
     ctx.call(CORE_ROOT, CORE_ROOT_FUNC_SET_CONTRACT_FEE, params.into(), None);
   }
 
-  /// Returns the data of the specified smart `contract`.
-  pub fn contract(ctx: &ScViewContext, contract: &ScHname) -> Vec<u8> {
+  /// Returns the record of the specified smart `contract`.
+  pub fn contract(ctx: &ScViewContext, contract: &ScHname) -> ContractRecord {
     let params: ScMutableMap = map! {
       CORE_ROOT_PARAM_HNAME => contract,
     };
 
-    ctx
+    let data: Vec<u8> = ctx
       .call(CORE_ROOT, CORE_ROOT_VIEW_FIND_CONTRACT, params.into())
-      .get_value(CORE_ROOT_PARAM_DATA)
+      .get_value(CORE_ROOT_PARAM_DATA);
+
+    ContractRecord::from_bytes(&data)
   }
 
   /// Returns general information about the chain.
@@ -150,6 +155,19 @@ impl Root {
 impl Contract for Root {
   const NAME: &'static str = "root";
   const DESC: &'static str = "Root Contract";
+}
+
+// =============================================================================
+// =============================================================================
+
+#[derive(Encode, Decode)]
+pub struct ContractRecord {
+  program_hash: ScHash,
+  description: String,
+  name: String,
+  owner_fee: i64,
+  validator_fee: i64,
+  creator: ScAgentId,
 }
 
 // =============================================================================

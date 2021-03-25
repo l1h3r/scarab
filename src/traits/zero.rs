@@ -1,7 +1,6 @@
 use wasmlib::ScAddress;
 use wasmlib::ScAgentId;
 use wasmlib::ScChainId;
-use wasmlib::ScContractId;
 use wasmlib::ScHash;
 use wasmlib::ScRequestId;
 
@@ -36,7 +35,6 @@ impl_zero! {
   (ScAddress, 33),
   (ScAgentId, 37),
   (ScChainId, 33),
-  (ScContractId, 37),
   (ScHash, 32),
   (ScRequestId, 34),
 }

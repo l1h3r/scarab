@@ -164,7 +164,6 @@ impl_ScValue! {
   (Bytes, Vec<u8>, get_bytes),
   (ChainId, [u8; 33], get_chain_id),
   (Color, [u8; 32], get_color),
-  (ContractId, [u8; 37], get_contract_id),
   (Hash, [u8; 32], get_hash),
   (Hname, u32, get_hname),
   (Int64, i64, get_int64),

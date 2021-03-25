@@ -5,8 +5,8 @@
 /// ## Examples
 ///
 /// ```
-/// log!(ctx, "hello there!");
-/// log!(ctx, "format {} arguments", "some");
+/// log!("hello there!");
+/// log!("format {} arguments", "some");
 /// ```
 #[macro_export]
 macro_rules! log {
@@ -22,8 +22,8 @@ macro_rules! log {
 /// ## Examples
 ///
 /// ```
-/// trace!(ctx, "hello there!");
-/// trace!(ctx, "format {} arguments", "some");
+/// trace!("hello there!");
+/// trace!("format {} arguments", "some");
 /// ```
 #[macro_export]
 macro_rules! trace {

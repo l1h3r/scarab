@@ -9,8 +9,7 @@ use wasmlib::ScTransfers;
 use wasmlib::ScViewContext;
 use wasmlib::CORE_ACCOUNTS;
 use wasmlib::CORE_ACCOUNTS_FUNC_DEPOSIT;
-use wasmlib::CORE_ACCOUNTS_FUNC_WITHDRAW_TO_ADDRESS;
-use wasmlib::CORE_ACCOUNTS_FUNC_WITHDRAW_TO_CHAIN;
+use wasmlib::CORE_ACCOUNTS_FUNC_WITHDRAW;
 use wasmlib::CORE_ACCOUNTS_PARAM_AGENT_ID;
 use wasmlib::CORE_ACCOUNTS_VIEW_ACCOUNTS;
 use wasmlib::CORE_ACCOUNTS_VIEW_BALANCE;
@@ -27,8 +26,8 @@ use crate::traits::MapExt;
 pub struct Accounts;
 
 impl Accounts {
-  /// Moves `transfers` (tokens) to the on-chain account of `agent`.
-  pub fn deposit(ctx: &ScFuncContext, transfers: ScTransfers, agent: &ScAgentId) -> ScImmutableMap {
+  /// Moves `transfer` to the on-chain account of `agent`.
+  pub fn deposit(ctx: &ScFuncContext, transfer: ScTransfers, agent: &ScAgentId) {
     let params: ScMutableMap = map! {
       CORE_ACCOUNTS_PARAM_AGENT_ID => agent,
     };
@@ -37,21 +36,14 @@ impl Accounts {
       CORE_ACCOUNTS,
       CORE_ACCOUNTS_FUNC_DEPOSIT,
       params.into(),
-      transfers.into(),
-    )
+      transfer.into(),
+    );
   }
 
-  pub fn withdraw(ctx: &ScFuncContext, location: Location) -> ScImmutableMap {
-    match location {
-      Location::Address => {
-        ctx.require(ctx.caller().is_address(), "caller must be an address");
-        ctx.call(CORE_ACCOUNTS, CORE_ACCOUNTS_FUNC_WITHDRAW_TO_ADDRESS, None, None)
-      }
-      Location::Chain => {
-        ctx.require(!ctx.caller().is_address(), "caller must be a smart contract");
-        ctx.call(CORE_ACCOUNTS, CORE_ACCOUNTS_FUNC_WITHDRAW_TO_CHAIN, None, None)
-      }
-    }
+  /// Moves `transfer` to the caller's L1 address.
+  pub fn withdraw(ctx: &ScFuncContext, transfer: ScTransfers) {
+    ctx.require(ctx.caller().is_address(), "caller must be an address");
+    ctx.call(CORE_ACCOUNTS, CORE_ACCOUNTS_FUNC_WITHDRAW, None, transfer.into());
   }
 
   /// Returns a map of the assets controller by the specified `agent`.
