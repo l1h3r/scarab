@@ -2,6 +2,7 @@ use wasmlib::ScAgentId;
 use wasmlib::ScBaseContext;
 use wasmlib::ScColor;
 use wasmlib::ScFuncContext;
+use wasmlib::ScImmutableBytes;
 use wasmlib::ScImmutableColorArray;
 use wasmlib::ScImmutableMap;
 use wasmlib::ScMutableMap;
@@ -9,7 +10,7 @@ use wasmlib::ScTransfers;
 use wasmlib::ScViewContext;
 use wasmlib::CORE_ACCOUNTS;
 use wasmlib::CORE_ACCOUNTS_FUNC_DEPOSIT;
-use wasmlib::CORE_ACCOUNTS_FUNC_WITHDRAW;
+use wasmlib::CORE_ACCOUNTS_FUNC_WITHDRAW_TO_ADDRESS as CORE_ACCOUNTS_FUNC_WITHDRAW; // TODO: FIXME
 use wasmlib::CORE_ACCOUNTS_PARAM_AGENT_ID;
 use wasmlib::CORE_ACCOUNTS_VIEW_ACCOUNTS;
 use wasmlib::CORE_ACCOUNTS_VIEW_BALANCE;
@@ -18,35 +19,37 @@ use wasmlib::KEY_COLOR;
 
 use crate::contracts::core::Contract;
 use crate::traits::MapExt;
+use crate::traits::ToUint;
 
-/// A simple wrapper around the core [`accounts`][SPEC] contract.
+/// A simple wrapper around the core [accounts][SPEC] contract.
 ///
 /// [SPEC]: https://github.com/iotaledger/wasp/blob/master/docs/tutorial/accounts.md
 #[derive(Clone, Copy, Debug)]
 pub struct Accounts;
 
 impl Accounts {
-  /// Moves `transfer` to the on-chain account of `agent`.
-  pub fn deposit(ctx: &ScFuncContext, transfer: ScTransfers, agent: &ScAgentId) {
-    let params: ScMutableMap = map! {
-      CORE_ACCOUNTS_PARAM_AGENT_ID => agent,
-    };
+  /// Moves `transfer` to the L2 (on-chain) account of the caller.
+  pub fn deposit_caller(ctx: &ScFuncContext, transfer: ScTransfers) {
+    ctx.call(CORE_ACCOUNTS, CORE_ACCOUNTS_FUNC_DEPOSIT, None, transfer.into());
+  }
 
+  /// Moves `transfer` to the L2 (on-chain) account of `agent`.
+  pub fn deposit_account(ctx: &ScFuncContext, transfer: ScTransfers, agent: &ScAgentId) {
     ctx.call(
       CORE_ACCOUNTS,
       CORE_ACCOUNTS_FUNC_DEPOSIT,
-      params.into(),
+      map!(CORE_ACCOUNTS_PARAM_AGENT_ID => agent).into(),
       transfer.into(),
     );
   }
 
-  /// Moves `transfer` to the caller's L1 address.
+  /// Moves `transfer` to the L1 (tangle) address of the caller.
   pub fn withdraw(ctx: &ScFuncContext, transfer: ScTransfers) {
     ctx.require(ctx.caller().is_address(), "caller must be an address");
     ctx.call(CORE_ACCOUNTS, CORE_ACCOUNTS_FUNC_WITHDRAW, None, transfer.into());
   }
 
-  /// Returns a map of the assets controller by the specified `agent`.
+  /// Returns a map of the assets controlled by the specified `agent`.
   pub fn balance(ctx: &ScViewContext, agent: &ScAgentId) -> Balances {
     let params: ScMutableMap = map! {
       CORE_ACCOUNTS_PARAM_AGENT_ID => agent,
@@ -63,6 +66,8 @@ impl Accounts {
   }
 
   /// Returns a list of all non-empty accounts on the chain.
+  //
+  // TODO: Need a way to list the keys of `ScImmutableMap`
   pub fn accounts(ctx: &ScViewContext) -> ScImmutableMap {
     ctx.call(CORE_ACCOUNTS, CORE_ACCOUNTS_VIEW_ACCOUNTS, None)
   }
@@ -76,28 +81,16 @@ impl Contract for Accounts {
 // =============================================================================
 // =============================================================================
 
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-pub enum Location {
-  /// Sends all smart contract funds to the caller (an address)
-  ///
-  /// Note: Only valid if requested by an address (not a smart contract)
-  Address,
-  /// Sends all smart contract funds to the contract's native chain account.
-  ///
-  /// Note: Only valid if requested by the smart contract (not an address)
-  Chain,
-}
-
-// =============================================================================
-// =============================================================================
-
+/// A map of account balances.
 pub struct Balances(ScImmutableMap);
 
 impl Balances {
-  pub fn get(&self, color: &ScColor) -> i64 {
-    self.0.get_value(color)
+  /// Returns the total balance of tokens matching the specified `color`.
+  pub fn get(&self, color: &ScColor) -> Option<u64> {
+    self.0.get::<_, ScImmutableBytes>(color).to_uint()
   }
 
+  /// Returns an array of all token colors
   pub fn colors(&self) -> ScImmutableColorArray {
     self.0.get_color_array(&KEY_COLOR)
   }

@@ -13,21 +13,23 @@ use wasmlib::CORE_EVENTLOG_VIEW_GET_RECORDS;
 
 use crate::consts::*;
 use crate::contracts::core::Contract;
+use crate::traits::ContainerArray;
 use crate::traits::MapExt;
+use crate::types::ScBytes;
 
-/// A simple wrapper around the core [`eventlog`][SPEC] contract.
+/// A simple wrapper around the core [eventlog][SPEC] contract.
 ///
 /// [SPEC]: https://github.com/iotaledger/wasp/blob/master/docs/tutorial/eventlog.md
 #[derive(Clone, PartialEq)]
 pub struct EventLog(ScHname);
 
 impl EventLog {
-  /// Creates a new [`EventLog`] for the specified `contract`.
+  /// Creates a new `EventLog` for the specified `contract`.
   pub fn new(contract: &str) -> Self {
     Self::from_hname(ScHname::new(contract))
   }
 
-  /// Creates a new [`EventLog`] for the specified contract `hname`.
+  /// Creates a new `EventLog` for the contract specified by `hname`.
   pub const fn from_hname(hname: ScHname) -> Self {
     Self(hname)
   }
@@ -39,22 +41,18 @@ impl EventLog {
       .get_value(CORE_EVENTLOG_PARAM_NUM_RECORDS)
   }
 
-  pub fn search(&self, ctx: &ScViewContext, filter: EventFilter) -> Vec<Vec<u8>> {
+  /// Returns a list of events matching the `filter` conditions.
+  pub fn search(&self, ctx: &ScViewContext, filter: EventFilter) -> Vec<ScBytes> {
     let params: ScMutableMap = self.filter(filter);
 
-    let output: ScImmutableBytesArray = ctx
+    ctx
       .call(CORE_EVENTLOG, CORE_EVENTLOG_VIEW_GET_RECORDS, params.into())
-      .get(CORE_EVENTLOG_PARAM_RECORDS);
-
-    (0..output.length())
-      .map(|index| output.get_bytes(index).value())
-      .collect()
+      .get::<_, ScImmutableBytesArray>(CORE_EVENTLOG_PARAM_RECORDS)
+      .to_vec()
   }
 
   fn params(&self) -> ScMutableMap {
-    map! {
-      CORE_EVENTLOG_PARAM_CONTRACT_HNAME => &self.0,
-    }
+    map!(CORE_EVENTLOG_PARAM_CONTRACT_HNAME => &self.0)
   }
 
   fn filter(&self, filter: EventFilter) -> ScMutableMap {
@@ -84,6 +82,7 @@ impl Contract for EventLog {
 // =============================================================================
 // =============================================================================
 
+/// A set of conditions used for event filtering.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct EventFilter {
   ftime: Option<NonZeroI64>,
@@ -92,6 +91,7 @@ pub struct EventFilter {
 }
 
 impl EventFilter {
+  /// Creates a new `EventFilter`.
   pub const fn new() -> Self {
     Self {
       ftime: None,
@@ -100,6 +100,7 @@ impl EventFilter {
     }
   }
 
+  /// Sets the `from` timestamp (default: 0).
   pub const fn from(self, value: i64) -> Self {
     Self {
       ftime: NonZeroI64::new(value),
@@ -107,6 +108,7 @@ impl EventFilter {
     }
   }
 
+  /// Sets the `to` timestamp (default: now).
   pub const fn to(self, value: i64) -> Self {
     Self {
       ttime: NonZeroI64::new(value),
@@ -114,6 +116,7 @@ impl EventFilter {
     }
   }
 
+  /// Sets the maximum number of records to return (default: 50).
   pub const fn count(self, value: i64) -> Self {
     Self {
       count: NonZeroI64::new(value),

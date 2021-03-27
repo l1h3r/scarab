@@ -1,7 +1,6 @@
 use wasmlib::*;
 
 use crate::traits::Container;
-use crate::traits::ContainerMut;
 use crate::traits::Value;
 
 /// A common interface for retrieving [values][Value] from a map.
@@ -42,9 +41,7 @@ impl_MapGet! {
   (ScImmutableMap, ScImmutableMap, get_map),
   (ScImmutableMap, ScImmutableRequestId, get_request_id),
   (ScImmutableMap, ScImmutableString, get_string),
-}
 
-impl_MapGet! {
   (ScImmutableMap, ScImmutableAddressArray, get_address_array),
   (ScImmutableMap, ScImmutableAgentIdArray, get_agent_id_array),
   (ScImmutableMap, ScImmutableBytesArray, get_bytes_array),
@@ -70,9 +67,7 @@ impl_MapGet! {
   (ScMutableMap, ScMutableMap, get_map),
   (ScMutableMap, ScMutableRequestId, get_request_id),
   (ScMutableMap, ScMutableString, get_string),
-}
 
-impl_MapGet! {
   (ScMutableMap, ScMutableAddressArray, get_address_array),
   (ScMutableMap, ScMutableAgentIdArray, get_agent_id_array),
   (ScMutableMap, ScMutableBytesArray, get_bytes_array),
@@ -86,20 +81,32 @@ impl_MapGet! {
   (ScMutableMap, ScMutableStringArray, get_string_array),
 }
 
+impl<T> MapGet<T> for ScMutableMap
+where
+  ScImmutableMap: MapGet<T>,
+{
+  fn mget<U>(&self, key: &U) -> T
+  where
+    U: MapKey + ?Sized
+  {
+    self.immutable().mget(key)
+  }
+}
+
 // =============================================================================
 // =============================================================================
 
 /// A common interface for values that can be applied to maps.
-pub trait MapSet {
+pub trait MapSet<Map> {
   /// Sets the value of `key` in `map`.
-  fn mset<T>(&self, map: &ScMutableMap, key: &T)
+  fn mset<T>(&self, map: &Map, key: &T)
   where
     T: MapKey + ?Sized;
 }
 
 macro_rules! impl_MapSet {
   ($ident:ty, $fn:ident) => {
-    impl MapSet for $ident {
+    impl MapSet<ScMutableMap> for $ident {
       fn mset<T>(&self, map: &ScMutableMap, key: &T)
       where
         T: MapKey + ?Sized,
@@ -130,7 +137,7 @@ impl_MapSet! {
   (str, get_string),
 }
 
-impl MapSet for ScHname {
+impl MapSet<ScMutableMap> for ScHname {
   fn mset<T>(&self, map: &ScMutableMap, key: &T)
   where
     T: MapKey + ?Sized,
@@ -139,7 +146,7 @@ impl MapSet for ScHname {
   }
 }
 
-impl MapSet for i64 {
+impl MapSet<ScMutableMap> for i64 {
   fn mset<T>(&self, map: &ScMutableMap, key: &T)
   where
     T: MapKey + ?Sized,
@@ -148,7 +155,7 @@ impl MapSet for i64 {
   }
 }
 
-impl MapSet for bool {
+impl MapSet<ScMutableMap> for bool {
   fn mset<T>(&self, map: &ScMutableMap, key: &T)
   where
     T: MapKey + ?Sized,
@@ -185,10 +192,29 @@ pub trait MapExt: Sized {
   fn set<T, U>(&self, key: &T, value: &U)
   where
     T: MapKey + ?Sized,
+    U: MapSet<Self> + ?Sized,
+  {
+    value.mset(self, key);
+  }
+
+  /// Returns `true` if self contains `key`.
+  fn contains<T, U>(&self, key: &T) -> bool
+  where
+    T: MapKey + ?Sized,
+    U: Value,
+    Self: MapGet<U::Container>,
+  {
+    self.mget(key).has()
+  }
+
+  /// Returns `true` if self contains `key`.
+  fn contains_mut<T, U>(&self, key: &T) -> bool
+  where
+    T: MapKey + ?Sized,
     U: Value,
     Self: MapGet<U::ContainerMut>,
   {
-    self.mget(key).set(value);
+    self.mget(key).has()
   }
 }
 

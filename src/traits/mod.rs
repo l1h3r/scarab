@@ -1,6 +1,7 @@
 mod encode;
 mod export;
 mod ext;
+mod uint;
 mod unsafe_math;
 mod zero;
 
@@ -17,5 +18,6 @@ pub use self::ext::MapExt;
 pub use self::ext::MapGet;
 pub use self::ext::MapSet;
 pub use self::ext::Value;
+pub use self::uint::ToUint;
 pub use self::unsafe_math::UnsafeMath;
 pub use self::zero::Zero;

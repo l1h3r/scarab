@@ -60,6 +60,46 @@ pub trait ContainerArray {
   fn to_vec(&self) -> Vec<<Self::Value as Container>::Value> {
     (0..self.len()).map(|index| self.get(index)).collect()
   }
+
+  fn into_iter(self) -> IntoIter<Self>
+  where
+    Self: Sized,
+  {
+    IntoIter::new(self)
+  }
+}
+
+// =============================================================================
+// =============================================================================
+
+/// A by-value [container][ContainerArray] iterator.
+pub struct IntoIter<T> {
+  index: usize,
+  scope: T,
+}
+
+impl<T> IntoIter<T> {
+  const fn new(scope: T) -> Self {
+    Self { index: 0, scope }
+  }
+}
+
+impl<T> Iterator for IntoIter<T>
+where
+  T: ContainerArray,
+{
+  type Item = <T::Value as Container>::Value;
+
+  fn next(&mut self) -> Option<Self::Item> {
+    let next: T::Value = self.scope.__get(self.index);
+
+    if next.has() {
+      self.index = self.index.checked_add(1)?;
+      return Some(next.get());
+    }
+
+    None
+  }
 }
 
 // =============================================================================

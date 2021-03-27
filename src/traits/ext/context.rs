@@ -112,7 +112,7 @@ pub trait ContextExt: private::Sealed + ScBaseContext {
   fn result<T, U>(&self, key: &T, value: U)
   where
     T: MapKey + ?Sized,
-    U: MapSet,
+    U: MapSet<ScMutableMap>,
   {
     value.mset(&self.results(), key);
   }
