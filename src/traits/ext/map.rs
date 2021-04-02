@@ -87,7 +87,7 @@ where
 {
   fn mget<U>(&self, key: &U) -> T
   where
-    U: MapKey + ?Sized
+    U: MapKey + ?Sized,
   {
     self.immutable().mget(key)
   }

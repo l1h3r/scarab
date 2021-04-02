@@ -1,5 +1,3 @@
-//! Commonly used types.
-
 /// Smart Contract [Bytes][Vec<u8>].
 pub type ScBytes = Vec<u8>;
 
