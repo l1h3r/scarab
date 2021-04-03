@@ -5,51 +5,47 @@ static IOTA: &ScColor = &ScColor::IOTA;
 static MINT: &ScColor = &ScColor::MINT;
 
 mod private {
-  pub struct Private;
   pub trait Sealed {}
 }
 
 /// Extensions for [ScColor].
 pub trait ColorExt: private::Sealed {
+  /// Returns `true` if the token color is [IOTA][ScColor::IOTA].
   fn is_iota(&self) -> bool {
-    self.__bytes(private::Private) == IOTA.to_bytes()
+    self.color() == IOTA
   }
 
+  /// Returns `true` if the token color is [MINT][ScColor::MINT].
   fn is_mint(&self) -> bool {
-    self.__bytes(private::Private) == MINT.to_bytes()
+    self.color() == MINT
   }
 
+  /// Returns `true` if the token color is non-standard.
   fn is_custom(&self) -> bool {
     !self.is_iota() && !self.is_mint()
   }
 
+  /// Returns a human-friendly name for the token color.
   fn name(&self) -> Cow<'_, str> {
     if self.is_iota() {
       Cow::Borrowed("IOTA")
     } else if self.is_mint() {
       Cow::Borrowed("MINT")
     } else {
-      Cow::Owned(self.__string(private::Private))
+      Cow::Owned(self.color().to_string())
     }
   }
 
   #[doc(hidden)]
-  fn __bytes(&self, _: private::Private) -> &[u8];
-
-  #[doc(hidden)]
-  fn __string(&self, _: private::Private) -> String;
+  fn color(&self) -> &ScColor;
 }
 
 impl private::Sealed for ScColor {}
 
 impl ColorExt for ScColor {
   #[doc(hidden)]
-  fn __bytes(&self, _: private::Private) -> &[u8] {
-    self.to_bytes()
-  }
-
-  #[doc(hidden)]
-  fn __string(&self, _: private::Private) -> String {
-    self.to_string()
+  #[inline(always)]
+  fn color(&self) -> &ScColor {
+    self
   }
 }

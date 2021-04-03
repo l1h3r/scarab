@@ -5,7 +5,7 @@ use wasmlib::ScExports;
 use wasmlib::ScFuncContext;
 use wasmlib::ScViewContext;
 
-use crate::traits::ContextExt;
+use crate::traits::extension::ContextExt;
 use crate::Decode;
 use crate::Encode;
 
@@ -168,7 +168,7 @@ pub trait IERC20__Bridge: IERC20 {
     let spender: ScAgentId = ctx.get_required_param("spender");
     let value: U256 = ctx.get_required_param("value");
 
-    ctx.result("success", Self::approve(ctx, &spender, &value));
+    ctx.result("success", Self::approve(ctx, &spender, &value) as i64);
 
     trace!("ERC20.approve [<]");
   }
@@ -180,7 +180,7 @@ pub trait IERC20__Bridge: IERC20 {
     let to: ScAgentId = ctx.get_required_param("to");
     let value: U256 = ctx.get_required_param("value");
 
-    ctx.result("success", Self::transfer(ctx, &to, &value));
+    ctx.result("success", Self::transfer(ctx, &to, &value) as i64);
 
     trace!("ERC20.transfer [<]");
   }
@@ -193,7 +193,7 @@ pub trait IERC20__Bridge: IERC20 {
     let to: ScAgentId = ctx.get_required_param("to");
     let value: U256 = ctx.get_required_param("value");
 
-    ctx.result("success", Self::transferFrom(ctx, &from, &to, &value));
+    ctx.result("success", Self::transferFrom(ctx, &from, &to, &value) as i64);
 
     trace!("ERC20.transferFrom [<]");
   }

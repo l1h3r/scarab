@@ -1,23 +1,6 @@
-mod encode;
-mod export;
-mod ext;
-mod uint;
-mod unsafe_math;
-mod zero;
+//! Helper traits
 
-pub use self::encode::Decode;
-pub use self::encode::Encode;
-pub use self::export::Export;
-pub use self::ext::ColorExt;
-pub use self::ext::Container;
-pub use self::ext::ContainerArray;
-pub use self::ext::ContainerArrayMut;
-pub use self::ext::ContainerMut;
-pub use self::ext::ContextExt;
-pub use self::ext::MapExt;
-pub use self::ext::MapGet;
-pub use self::ext::MapSet;
-pub use self::ext::Value;
-pub use self::uint::ToUint;
-pub use self::unsafe_math::UnsafeMath;
-pub use self::zero::Zero;
+pub mod core;
+pub mod extension;
+pub mod math;
+pub mod utility;

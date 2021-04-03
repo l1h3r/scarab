@@ -32,8 +32,7 @@ macro_rules! trace {
   };
 }
 
-/// Creates a new [ScImmutableMap][wasmlib::ScImmutableMap] from a set of
-/// initial values.
+/// Creates a new [ScImmutableMap][wasmlib::ScImmutableMap] from a map of values.
 ///
 /// ```
 /// let immutable = imap! {
@@ -48,8 +47,7 @@ macro_rules! imap {
   };
 }
 
-/// Creates a new [ScMutableMap][wasmlib::ScMutableMap] from a set of
-/// initial values.
+/// Creates a new [ScMutableMap][wasmlib::ScMutableMap] from a map of values.
 ///
 /// ```
 /// let mutable = imap! {

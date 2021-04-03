@@ -16,8 +16,8 @@ use wasmlib::CORE_BLOB_VIEW_LIST_BLOBS;
 
 use crate::consts::*;
 use crate::contracts::core::Contract;
-use crate::traits::MapExt;
-use crate::traits::ToUint;
+use crate::traits::extension::MapExt;
+use crate::traits::math::ToInteger;
 use crate::types::ScBytes;
 use crate::types::ScString;
 
@@ -38,17 +38,17 @@ impl Blob {
   /// Stores the given `blob` and returns a hash identifying the contents.
   pub fn store(ctx: &ScFuncContext, blob: ScMutableMap) -> ScHash {
     ctx.require(
-      !blob.contains_mut::<_, ScBytes>(CORE_BLOB_FIELD_PROGRAM_BINARY),
+      !blob.contains::<_, ScBytes>(CORE_BLOB_FIELD_PROGRAM_BINARY),
       "reserved field: `p`",
     );
 
     ctx.require(
-      !blob.contains_mut::<_, ScString>(CORE_BLOB_FIELD_PROGRAM_DESCRIPTION),
+      !blob.contains::<_, ScString>(CORE_BLOB_FIELD_PROGRAM_DESCRIPTION),
       "reserved field: `d`",
     );
 
     ctx.require(
-      !blob.contains_mut::<_, ScString>(CORE_BLOB_FIELD_VM_TYPE),
+      !blob.contains::<_, ScString>(CORE_BLOB_FIELD_VM_TYPE),
       "reserved field: `v`",
     );
 
@@ -117,7 +117,7 @@ pub struct BlobSizes(ScImmutableMap);
 impl BlobSizes {
   /// Returns the size of the specified blob.
   pub fn get(&self, key: &ScHash) -> Option<u32> {
-    self.0.get::<_, ScImmutableBytes>(key).to_uint()
+    self.0.get::<_, ScImmutableBytes>(key).to_integer()
   }
 }
 
@@ -139,7 +139,7 @@ impl FieldSizes {
   where
     T: MapKey + ?Sized,
   {
-    self.0.get::<_, ScImmutableBytes>(key).to_uint()
+    self.0.get::<_, ScImmutableBytes>(key).to_integer()
   }
 }
 

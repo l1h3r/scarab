@@ -5,8 +5,8 @@ use wasmlib::ScColor;
 use wasmlib::ScFuncContext;
 use wasmlib::ScTransfers;
 
-use crate::traits::ColorExt;
-use crate::traits::ContainerArray;
+use crate::traits::core::Array;
+use crate::traits::extension::ColorExt;
 
 /// Withdraw all L2 tokens of the specified `color` to the caller's L1 address.
 ///

@@ -1,5 +1,6 @@
 //! Tools for working with IOTA Smart Contracts
 
+#![feature(const_unreachable_unchecked)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(
   rust_2018_idioms,
@@ -40,17 +41,19 @@ pub mod prelude {
   //!
   //! This module exists to alleviate imports of common traits for working with
   //! IOTA Smart Contracts.
-  pub use crate::traits::ColorExt;
-  pub use crate::traits::ContextExt;
-  pub use crate::traits::Export;
-  pub use crate::traits::MapExt;
-  pub use crate::traits::Zero;
+  pub use crate::traits::extension::ColorExt;
+  pub use crate::traits::extension::ContextExt;
+  pub use crate::traits::extension::HashExt;
+  pub use crate::traits::extension::MapExt;
+  pub use crate::traits::extension::ValueExt;
+  pub use crate::traits::math::Integer;
+  pub use crate::traits::utility::Export;
 }
 
 #[doc(hidden)]
 pub mod export {
-  pub use crate::traits::Decode;
-  pub use crate::traits::Encode;
+  pub use crate::traits::utility::Decode;
+  pub use crate::traits::utility::Encode;
   pub use wasmlib::BytesDecoder;
   pub use wasmlib::BytesEncoder;
 }

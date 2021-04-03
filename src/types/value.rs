@@ -1,28 +1,40 @@
 use core::fmt::Debug;
 use core::fmt::Formatter;
 use core::fmt::Result;
-use wasmlib::host;
-use wasmlib::BytesDecoder;
-use wasmlib::BytesEncoder;
+use wasmlib::*;
 
-use crate::types::wasm::*;
+use crate::types::ScBytes;
+use crate::types::ScInt64;
+use crate::types::ScString;
 use crate::types::ScTag;
 
+/// Represents any valid smart contract value.
 #[derive(Clone, PartialEq)]
 pub enum ScValue {
+  /// Represents a smart contract address.
   Address(ScAddress),
+  /// Represents a smart contract agent id.
   AgentId(ScAgentId),
+  /// Represents a smart contract byte vector.
   Bytes(ScBytes),
+  /// Represents a smart contract chain id.
   ChainId(ScChainId),
+  /// Represents a smart contract color.
   Color(ScColor),
+  /// Represents a smart contract hash.
   Hash(ScHash),
+  /// Represents a smart contract hash name.
   Hname(ScHname),
+  /// Represents a smart contract integer.
   Int64(ScInt64),
+  /// Represents a smart contract request id.
   RequestId(ScRequestId),
+  /// Represents a smart contract string.
   String(ScString),
 }
 
 impl ScValue {
+  /// Decodes an `ScValue` from the given type tag and slice of bytes.
   pub fn from_bytes(tag: ScTag, bytes: &[u8]) -> Self {
     let mut decoder: BytesDecoder<'_> = BytesDecoder::new(bytes);
 
@@ -40,10 +52,14 @@ impl ScValue {
     }
   }
 
+  /// Returns the value tag and encoded vector of bytes.
   pub fn to_bytes(&self) -> (ScTag, Vec<u8>) {
     (self.tag(), self.to_untagged_bytes())
   }
 
+  /// Encodes this value as a vector of bytes.
+  ///
+  /// Note: The type id is **not** included in this serialization.
   pub fn to_untagged_bytes(&self) -> Vec<u8> {
     let mut encoder: BytesEncoder = BytesEncoder::new();
 
@@ -61,6 +77,7 @@ impl ScValue {
     }
   }
 
+  /// Returns the tag identifying the value type.
   pub const fn tag(&self) -> ScTag {
     match self {
       Self::Address(_) => ScTag::Address,
@@ -76,59 +93,54 @@ impl ScValue {
     }
   }
 
+  /// Returns `true` if the value is an [address][ScAddress].
   pub const fn is_address(&self) -> bool {
     matches!(self, Self::Address(_))
   }
 
+  /// Returns `true` if the value is an [agent id][ScAgentId].
   pub const fn is_agent_id(&self) -> bool {
     matches!(self, Self::AgentId(_))
   }
 
+  /// Returns `true` if the value is a [byte vector][ScBytes].
   pub const fn is_bytes(&self) -> bool {
     matches!(self, Self::Bytes(_))
   }
 
+  /// Returns `true` if the value is a [chain id][ScChainId].
   pub const fn is_chain_id(&self) -> bool {
     matches!(self, Self::ChainId(_))
   }
 
+  /// Returns `true` if the value is a [color][ScColor].
   pub const fn is_color(&self) -> bool {
     matches!(self, Self::Color(_))
   }
 
+  /// Returns `true` if the value is a [hash][ScHash].
   pub const fn is_hash(&self) -> bool {
     matches!(self, Self::Hash(_))
   }
 
+  /// Returns `true` if the value is a [hash name][ScHname].
   pub const fn is_hname(&self) -> bool {
     matches!(self, Self::Hname(_))
   }
 
+  /// Returns `true` if the value is an [i64][ScInt64].
   pub const fn is_int64(&self) -> bool {
     matches!(self, Self::Int64(_))
   }
 
+  /// Returns `true` if the value is a [request id][ScRequestId].
   pub const fn is_request_id(&self) -> bool {
     matches!(self, Self::RequestId(_))
   }
 
+  /// Returns `true` if the value is a [string][ScString].
   pub const fn is_string(&self) -> bool {
     matches!(self, Self::String(_))
-  }
-
-  pub const fn host_type(&self) -> i32 {
-    match self {
-      Self::Address(_) => host::TYPE_ADDRESS,
-      Self::AgentId(_) => host::TYPE_AGENT_ID,
-      Self::Bytes(_) => host::TYPE_BYTES,
-      Self::ChainId(_) => host::TYPE_CHAIN_ID,
-      Self::Color(_) => host::TYPE_COLOR,
-      Self::Hash(_) => host::TYPE_HASH,
-      Self::Hname(_) => host::TYPE_HNAME,
-      Self::Int64(_) => host::TYPE_INT64,
-      Self::RequestId(_) => host::TYPE_REQUEST_ID,
-      Self::String(_) => host::TYPE_STRING,
-    }
   }
 }
 

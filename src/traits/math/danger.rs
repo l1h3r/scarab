@@ -1,5 +1,6 @@
 use wasmlib::ScMutableInt64;
 
+/// Unchecked math operations. You don't want this.
 pub trait UnsafeMath {
   fn inc_value(&self, amount: i64);
   fn dec_value(&self, amount: i64);

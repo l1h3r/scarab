@@ -1,12 +1,4 @@
-use wasmlib::BytesDecoder;
-use wasmlib::BytesEncoder;
-use wasmlib::ScAddress;
-use wasmlib::ScAgentId;
-use wasmlib::ScChainId;
-use wasmlib::ScColor;
-use wasmlib::ScHash;
-use wasmlib::ScHname;
-use wasmlib::ScRequestId;
+use wasmlib::*;
 
 use crate::types::ScBytes;
 use crate::types::ScInt64;

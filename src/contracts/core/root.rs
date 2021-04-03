@@ -30,10 +30,10 @@ use wasmlib::CORE_ROOT_VIEW_GET_FEE_INFO;
 
 use crate::consts::*;
 use crate::contracts::core::Contract;
-use crate::traits::ColorExt;
-use crate::traits::Decode as _;
-use crate::traits::MapExt;
-use crate::traits::ToUint;
+use crate::traits::extension::ColorExt;
+use crate::traits::extension::MapExt;
+use crate::traits::math::ToInteger;
+use crate::traits::utility::Decode as _;
 use crate::Decode;
 use crate::Encode;
 
@@ -309,7 +309,10 @@ impl ContractFees {
 
   /// Returns the fee charged by the contract owner.
   pub fn owner_fee(&self) -> Option<u64> {
-    self.0.get::<_, ScImmutableBytes>(CORE_ROOT_PARAM_OWNER_FEE).to_uint()
+    self
+      .0
+      .get::<_, ScImmutableBytes>(CORE_ROOT_PARAM_OWNER_FEE)
+      .to_integer()
   }
 
   /// Returns the fee charged by the contract validator.
@@ -317,7 +320,7 @@ impl ContractFees {
     self
       .0
       .get::<_, ScImmutableBytes>(CORE_ROOT_PARAM_VALIDATOR_FEE)
-      .to_uint()
+      .to_integer()
   }
 }
 

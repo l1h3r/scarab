@@ -13,8 +13,8 @@ use wasmlib::CORE_EVENTLOG_VIEW_GET_RECORDS;
 
 use crate::consts::*;
 use crate::contracts::core::Contract;
-use crate::traits::ContainerArray;
-use crate::traits::MapExt;
+use crate::traits::core::Array;
+use crate::traits::extension::MapExt;
 use crate::types::ScBytes;
 
 /// A simple wrapper around the core [eventlog][SPEC] contract.

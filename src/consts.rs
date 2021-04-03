@@ -1,5 +1,7 @@
 //! Commonly used constants.
 
+#![allow(missing_docs)]
+
 pub const INIT: &str = "init";
 
 pub const CORE_BLOB_PARAM_BYTES: &str = "bytes";

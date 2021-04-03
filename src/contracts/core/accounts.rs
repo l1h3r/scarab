@@ -18,8 +18,8 @@ use wasmlib::CORE_ACCOUNTS_VIEW_TOTAL_ASSETS;
 use wasmlib::KEY_COLOR;
 
 use crate::contracts::core::Contract;
-use crate::traits::MapExt;
-use crate::traits::ToUint;
+use crate::traits::extension::MapExt;
+use crate::traits::math::ToInteger;
 
 /// A simple wrapper around the core [accounts][SPEC] contract.
 ///
@@ -87,7 +87,7 @@ pub struct Balances(ScImmutableMap);
 impl Balances {
   /// Returns the total balance of tokens matching the specified `color`.
   pub fn get(&self, color: &ScColor) -> Option<u64> {
-    self.0.get::<_, ScImmutableBytes>(color).to_uint()
+    self.0.get::<_, ScImmutableBytes>(color).to_integer()
   }
 
   /// Returns an array of all token colors
