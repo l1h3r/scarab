@@ -1,10 +1,12 @@
 //! Tools for working with IOTA Smart Contracts
 
+#![feature(core_intrinsics)]
 #![feature(const_unreachable_unchecked)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(
   rust_2018_idioms,
   unreachable_pub,
+  // missing_docs,
   rustdoc::missing_crate_level_docs,
   rustdoc::broken_intra_doc_links,
   rustdoc::private_intra_doc_links,
@@ -25,6 +27,9 @@ mod macros;
 
 #[doc(hidden)]
 pub use scarab_derive::*;
+
+#[doc(hidden)]
+pub mod panic;
 
 pub mod consts;
 pub mod contracts;

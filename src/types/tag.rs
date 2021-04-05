@@ -93,18 +93,59 @@ impl ScTag {
   }
 
   /// Returns the host type id of the value.
-  pub const fn type_id(&self) -> i32 {
-    match self {
-      Self::Address => host::TYPE_ADDRESS,
-      Self::AgentId => host::TYPE_AGENT_ID,
-      Self::Bytes => host::TYPE_BYTES,
-      Self::ChainId => host::TYPE_CHAIN_ID,
-      Self::Color => host::TYPE_COLOR,
-      Self::Hash => host::TYPE_HASH,
-      Self::Hname => host::TYPE_HNAME,
-      Self::Int64 => host::TYPE_INT64,
-      Self::RequestId => host::TYPE_REQUEST_ID,
-      Self::String => host::TYPE_STRING,
+  pub const fn type_id(self) -> i32 {
+    self as i32
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_from_type_id() {
+    assert_eq!(ScTag::from_type_id(host::TYPE_ADDRESS), Some(ScTag::Address));
+    assert_eq!(ScTag::from_type_id(host::TYPE_AGENT_ID), Some(ScTag::AgentId));
+    assert_eq!(ScTag::from_type_id(host::TYPE_BYTES), Some(ScTag::Bytes));
+    assert_eq!(ScTag::from_type_id(host::TYPE_CHAIN_ID), Some(ScTag::ChainId));
+    assert_eq!(ScTag::from_type_id(host::TYPE_COLOR), Some(ScTag::Color));
+    assert_eq!(ScTag::from_type_id(host::TYPE_HASH), Some(ScTag::Hash));
+    assert_eq!(ScTag::from_type_id(host::TYPE_HNAME), Some(ScTag::Hname));
+    assert_eq!(ScTag::from_type_id(host::TYPE_INT64), Some(ScTag::Int64));
+    assert_eq!(ScTag::from_type_id(host::TYPE_REQUEST_ID), Some(ScTag::RequestId));
+    assert_eq!(ScTag::from_type_id(host::TYPE_STRING), Some(ScTag::String));
+
+    assert_eq!(ScTag::from_type_id(i32::MAX), None);
+    assert_eq!(ScTag::from_type_id(i32::MIN), None);
+  }
+
+  #[test]
+  fn test_from_type_id_unchecked() {
+    unsafe {
+      assert_eq!(ScTag::from_type_id_unchecked(host::TYPE_ADDRESS), ScTag::Address);
+      assert_eq!(ScTag::from_type_id_unchecked(host::TYPE_AGENT_ID), ScTag::AgentId);
+      assert_eq!(ScTag::from_type_id_unchecked(host::TYPE_BYTES), ScTag::Bytes);
+      assert_eq!(ScTag::from_type_id_unchecked(host::TYPE_CHAIN_ID), ScTag::ChainId);
+      assert_eq!(ScTag::from_type_id_unchecked(host::TYPE_COLOR), ScTag::Color);
+      assert_eq!(ScTag::from_type_id_unchecked(host::TYPE_HASH), ScTag::Hash);
+      assert_eq!(ScTag::from_type_id_unchecked(host::TYPE_HNAME), ScTag::Hname);
+      assert_eq!(ScTag::from_type_id_unchecked(host::TYPE_INT64), ScTag::Int64);
+      assert_eq!(ScTag::from_type_id_unchecked(host::TYPE_REQUEST_ID), ScTag::RequestId);
+      assert_eq!(ScTag::from_type_id_unchecked(host::TYPE_STRING), ScTag::String);
     }
+  }
+
+  #[test]
+  fn test_type_id() {
+    assert_eq!(ScTag::Address.type_id(), host::TYPE_ADDRESS);
+    assert_eq!(ScTag::AgentId.type_id(), host::TYPE_AGENT_ID);
+    assert_eq!(ScTag::Bytes.type_id(), host::TYPE_BYTES);
+    assert_eq!(ScTag::ChainId.type_id(), host::TYPE_CHAIN_ID);
+    assert_eq!(ScTag::Color.type_id(), host::TYPE_COLOR);
+    assert_eq!(ScTag::Hash.type_id(), host::TYPE_HASH);
+    assert_eq!(ScTag::Hname.type_id(), host::TYPE_HNAME);
+    assert_eq!(ScTag::Int64.type_id(), host::TYPE_INT64);
+    assert_eq!(ScTag::RequestId.type_id(), host::TYPE_REQUEST_ID);
+    assert_eq!(ScTag::String.type_id(), host::TYPE_STRING);
   }
 }

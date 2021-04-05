@@ -17,19 +17,34 @@ crate-type = ["cdylib", "rlib"]
 [workspace]
 members = ["derive"]
 
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+
 [dependencies]
-paste = { version = "1.0"}
+paste = { version = "1.0", default-features = false }
 rand_core = { version = "0.6", default-features = false, optional = true }
-scarab-derive = { version = "=0.1.0", path = "derive" }
-wasmlib = { git = "https://github.com/iotaledger/wasp", rev = "2e14e161c15919e6cbc0d2e1c9bd4a84c860a337" }
+scarab-derive = { version = "=0.1.0", path = "derive", default-features = false }
+
+[dependencies.wasmlib]
+git = "https://github.com/iotaledger/wasp"
+rev = "2e14e161c15919e6cbc0d2e1c9bd4a84c860a337"
+default-features = false
 
 [features]
 default = [
-  "rand"
+  "rand",
+  "wee-alloc"
 ]
 
 rand = [
   "rand_core/alloc"
+]
+
+wee-alloc = [
+  "wasmlib/wee_alloc"
 ]
 
 [package.metadata.docs.rs]

@@ -1,6 +1,7 @@
 use core::convert::TryInto;
 use wasmlib::*;
 
+use crate::panic::Unwrap;
 use crate::traits::core::Value;
 
 /// Extensions for smart contract [values][Value].
@@ -33,11 +34,7 @@ impl ValueExt for ScHname {
   }
 
   fn into_primitive(self) -> Self::Primitive {
-    self
-      .to_bytes()
-      .try_into()
-      .map(u32::from_le_bytes)
-      .expect("ValueExt::into_primitive: infallible")
+    self.to_bytes().try_into().map(u32::from_le_bytes).unwrap_abort()
   }
 }
 
@@ -53,7 +50,7 @@ macro_rules! impl_ValueExt {
         self
           .to_bytes()
           .try_into()
-          .expect("ValueExt::into_primitive: infallible")
+          .unwrap_abort()
       }
     }
   };

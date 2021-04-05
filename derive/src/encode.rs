@@ -49,6 +49,6 @@ fn expand_fields(fields: &[Field]) -> TokenStream {
     .map(|field| quote!(::scarab::export::Encode::encode(&self.#field, __ENCODER)));
 
   quote! {
-    #(#stmts);*
+    #(#stmts;)*
   }
 }

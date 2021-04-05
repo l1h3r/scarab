@@ -3,7 +3,7 @@ use crate::traits::core::ProxyMut;
 
 /// A common interface for immutable array proxies.
 pub trait Array: Sized {
-  /// The inner value stored in the array.
+  /// The value stored in the array.
   type Value: Proxy;
 
   /// Returns the number of values in the array.
@@ -24,7 +24,7 @@ pub trait Array: Sized {
 
   /// Returns a newly allocated vector containing all values in the array.
   fn to_vec(&self) -> Vec<<Self::Value as Proxy>::Value> {
-    (0..self.len()).map(|index| self.get(index)).collect()
+    self.iter().collect()
   }
 
   /// Returns an iterator over the array.
@@ -45,6 +45,16 @@ where
 {
   /// Clears the array, removing all values.
   fn erase(&self);
+
+  /// Appends a value to the back of the array.
+  fn push(&self, value: <Self::Value as Proxy>::Value) {
+    self.proxy(self.len()).set(&value);
+  }
+
+  /// Appends a value to the back of the array.
+  fn push_proxy(&self, value: Self::Value) {
+    self.push(value.get());
+  }
 }
 
 // =============================================================================
@@ -52,13 +62,17 @@ where
 
 /// A by-reference [array][Array] iterator.
 pub struct Iter<'a, T> {
-  index: usize,
+  index: Option<usize>,
   scope: &'a T,
 }
 
 impl<'a, T> Iter<'a, T> {
   const fn new(scope: &'a T) -> Self {
-    Self { index: 0, scope }
+    Self { index: Some(0), scope }
+  }
+
+  fn step(&mut self) {
+    self.index = self.index.and_then(|index| index.checked_add(1));
   }
 }
 
@@ -69,15 +83,14 @@ where
   type Item = <T::Value as Proxy>::Value;
 
   fn next(&mut self) -> Option<Self::Item> {
-    if self.index >= self.scope.len() {
-      return None;
+    let index: usize = self.index?;
+
+    if index >= self.scope.len() {
+      None
+    } else {
+      self.step();
+      Some(self.scope.get(index))
     }
-
-    let next: Self::Item = self.scope.get(self.index);
-
-    self.index = self.index.checked_add(1)?;
-
-    Some(next)
   }
 }
 
@@ -95,13 +108,17 @@ impl<'a, T> Clone for Iter<'a, T> {
 
 /// A by-value [array][Array] iterator.
 pub struct IntoIter<T> {
-  index: usize,
+  index: Option<usize>,
   scope: T,
 }
 
 impl<T> IntoIter<T> {
   const fn new(scope: T) -> Self {
-    Self { index: 0, scope }
+    Self { index: Some(0), scope }
+  }
+
+  fn step(&mut self) {
+    self.index = self.index.and_then(|index| index.checked_add(1));
   }
 }
 
@@ -112,15 +129,14 @@ where
   type Item = <T::Value as Proxy>::Value;
 
   fn next(&mut self) -> Option<Self::Item> {
-    if self.index >= self.scope.len() {
-      return None;
+    let index: usize = self.index?;
+
+    if index >= self.scope.len() {
+      None
+    } else {
+      self.step();
+      Some(self.scope.get(index))
     }
-
-    let next: Self::Item = self.scope.get(self.index);
-
-    self.index = self.index.checked_add(1)?;
-
-    Some(next)
   }
 }
 

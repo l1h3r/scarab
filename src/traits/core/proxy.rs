@@ -2,18 +2,27 @@ use crate::traits::core::Value;
 
 /// A common interface for immutable value proxies.
 pub trait Proxy: Sized {
-  /// The inner value stored in the proxy.
+  /// The value stored in the proxy.
   type Value: Value;
 
-  /// Returns `true` if the proxy has a non-empty value.
+  /// Returns `true` if the proxy contains a [value][Self::Value].
   fn has(&self) -> bool;
 
-  /// Returns the inner [value][Self::Value] of the proxy.
+  /// Returns the stored [value][Self::Value].
   fn get(&self) -> Self::Value;
+
+  /// Returns the stored [value][Self::Value] if present, otherwise [None].
+  fn opt(&self) -> Option<Self::Value> {
+    if self.has() {
+      Some(self.get())
+    } else {
+      None
+    }
+  }
 }
 
 /// A common interface for mutable value proxies.
 pub trait ProxyMut: Proxy {
-  /// Sets the contained [value][Proxy::Value].
+  /// Sets the stored [value][Proxy::Value].
   fn set(&self, value: &Self::Value);
 }

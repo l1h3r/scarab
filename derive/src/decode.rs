@@ -50,17 +50,19 @@ fn expand_map(fields: &[Field]) -> TokenStream {
 
   quote! {
     Self {
-      #(#stmts),*
+      #(#stmts,)*
     }
   }
 }
 
 fn expand_seq(fields: &[Field]) -> TokenStream {
-  let stmts: _ = fields.iter().map(|_| quote!(scarab::export::Decode::decode(__DECODER)));
+  let stmts: _ = fields
+    .iter()
+    .map(|_| quote!(::scarab::export::Decode::decode(__DECODER)));
 
   quote! {
     Self(
-      #(#stmts),*
+      #(#stmts,)*
     )
   }
 }

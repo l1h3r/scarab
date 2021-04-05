@@ -77,7 +77,7 @@ pub trait ContextExt: private::Sealed {
     T: MapKey + ?Sized,
     U: MapGet<Self::State>,
   {
-    self.__state(private::Private).get(key)
+    self.state(private::Private).get(key)
   }
 
   fn get_state<T, U>(&self, key: &T) -> U
@@ -86,7 +86,7 @@ pub trait ContextExt: private::Sealed {
     U: Value,
     U::Proxy: MapGet<Self::State>,
   {
-    self.__state(private::Private).get_value(key)
+    self.state(private::Private).get_value(key)
   }
 
   fn get_required_state_proxy<T, U>(&self, key: &T) -> U
@@ -94,7 +94,7 @@ pub trait ContextExt: private::Sealed {
     T: MapKey + ?Sized,
     U: Proxy + MapGet<Self::State>,
   {
-    let this: U = self.__state(private::Private).get(key);
+    let this: U = self.state(private::Private).get(key);
 
     if !this.has() {
       self.panic(&format!("missing required param: Key32({})", intkey(key)));
@@ -113,7 +113,7 @@ pub trait ContextExt: private::Sealed {
   }
 
   // ===========================================================================
-  // Misc
+  // Misc. Helpers
   // ===========================================================================
 
   fn result<T, U>(&self, key: &T, value: U)
@@ -127,7 +127,7 @@ pub trait ContextExt: private::Sealed {
   fn view(&self) -> &ScViewContext;
 
   #[doc(hidden)]
-  fn __state(&self, _: private::Private) -> Self::State;
+  fn state(&self, _: private::Private) -> Self::State;
 }
 
 impl private::Sealed for ScViewContext {}
@@ -136,12 +136,14 @@ impl private::Sealed for ScFuncContext {}
 impl ContextExt for ScViewContext {
   type State = ScImmutableMap;
 
+  #[inline(always)]
   fn view(&self) -> &ScViewContext {
     self
   }
 
   #[doc(hidden)]
-  fn __state(&self, _: private::Private) -> Self::State {
+  #[inline(always)]
+  fn state(&self, _: private::Private) -> Self::State {
     self.state()
   }
 }
@@ -149,12 +151,14 @@ impl ContextExt for ScViewContext {
 impl ContextExt for ScFuncContext {
   type State = ScMutableMap;
 
+  #[inline(always)]
   fn view(&self) -> &ScViewContext {
     &ScViewContext {}
   }
 
   #[doc(hidden)]
-  fn __state(&self, _: private::Private) -> Self::State {
+  #[inline(always)]
+  fn state(&self, _: private::Private) -> Self::State {
     self.state()
   }
 }
